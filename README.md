@@ -1,8 +1,7 @@
-# BookmeterScraper
+# Bookmeter Scraper
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/bookmeter_scraper`. To experiment with that code, run `bin/console` for an interactive prompt.
+A library for scraping [Bookmeter](http://bookmeter.com).
 
-TODO: Delete this and the text above, and describe your gem
 
 ## Installation
 
@@ -20,22 +19,74 @@ Or install it yourself as:
 
     $ gem install bookmeter_scraper
 
+
 ## Usage
 
-TODO: Write usage instructions here
+### Get user profile
 
-## Development
+You can get a user profile.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake false` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment. Run `bundle exec bookmeter_scraper` to use the gem in this directory, ignoring other installed copies of this gem.
+```ruby
+require 'bookmeter_scraper'
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+bookmeter = BookmeterScraper::Bookmeter.new
+user_id = '000000'
+profile = bookmeter.profile(user_id)
+
+profile.name
+profile.gender
+profile.age
+profile.blood_type
+profile.job
+profile.address
+profile.url
+profile.description
+profile.first_day
+profile.elapsed_days
+profile.read_books_count
+profile.read_pages_count
+profile.reviews_count
+profile.bookshelfs_count
+```
+
+### Get information only accessible by logged in users
+
+You can get books information which can be browsed by logged in users:
+
+```ruby
+bookmeter = BookmeterScraper::Bookmeter.log_in('example@example.com', 'password')
+bookmeter.logged_in?    # true
+
+user_id = bookmeter.log_in_user_id
+books = bookmeter.read_books(user_id)
+```
+
+Each book has its name and finished reading dates.
+Finished reading dates are ones read by the user specified in an argument `read_books`.
+
+```ruby
+books[0].name
+books[0].read_dates
+```
+
+You can also get other book information:
+
+```ruby
+books = bookmeter.reading_books(user_id)
+books[0].name
+books[0].read_dates    # read_dates is empty
+
+# you can also use these methods
+bookmeter.tsundoku(user_id)
+bookmeter.wish_list(user_id)
+```
+
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/bookmeter_scraper.
+Bug reports and pull requests are welcome on GitHub at https://github.com/kymmt90/bookmeter_scraper.
 
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
