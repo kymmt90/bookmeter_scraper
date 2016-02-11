@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<title>test_userさんの読書メーター</title>
+	<meta name="keywords" content="test_user,読書メーター,読書,本,管理" />
+	<meta http-equiv="Content-Style-Type" content="text/css">
+	<meta http-equiv="imagetoolbar" content="no" />
+	<meta name="copyright" content="&copy;読書メーター" />
+	<link href="http://img.bookmeter.com/image/favicon.ico" rel="shortcut icon" />
+	<link href="http://img.bookmeter.com/css/style.css" type="text/css" rel="stylesheet">
+	<link rel="alternate" media="handheld" href="http://bookmeter.com/m/u/000000" />
+	<!--[if IE]>
+	  <link href="http://img.bookmeter.com/css/style_ie.css?d=110127" type="text/css" rel="stylesheet">
+	<![endif]-->
+	<link rel="apple-touch-icon-precomposed" href="http://img.bookmeter.com/smartfon/image/ilogo_20130322.png" />
+	<script type="text/javascript" src="http://img.bookmeter.com/js/common.js?51" charset="utf-8"></script>
+	<script type="text/javascript" src="http://img.bookmeter.com/js/quick_add.js?16" charset="utf-8"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" ></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js" ></script>
+	<script type="text/javascript" src="http://img.bookmeter.com/js/jslb_ajax_min.js" charset="utf-8"></script>
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="http://bookmeter.com/u/000000/rss">
+	<script language="JavaScript" type="text/javascript" src="http://img.bookmeter.com/js/iepngfix.js"></script>
+	<script type="text/javascript" src="http://img.bookmeter.com/js/book.js?20130315153007" charset="utf-8"></script>
+	<script type="text/javascript" src="http://img.bookmeter.com/js/res.js?201109251754" charset="utf-8"></script>
+	<script type="text/javascript" src="http://img.bookmeter.com/js/scrolltopcontrol.js"></script>
+	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/smoothness/jquery-ui.css" type="text/css" rel="stylesheet">
+	<link href="http://img.bookmeter.com/css/smoothness/jquery-ui-1.8.9.custom.css" type="text/css" rel="stylesheet">
+	<script type="text/javascript">
+	 <!--
+								   function goal_res(oj){
+									   var res = decodeURIComponent(oj.responseText);
+									   var res = res.split(",");
+									   var all_cnt = res[0];
+									   var ren_cnt = res[1];
+									   var lat_cnt = res[2];
+									   if(all_cnt == 0){
+										   document.getElementById("all_cnt").innerHTML = '';
+										   document.getElementById("ren_cnt").innerHTML = '';
+										   document.getElementById("lat_cnt").innerHTML = 'チェックはまだありません！';
+									   }else{
+										   document.getElementById("all_cnt").innerHTML = '読書日数：'+all_cnt+'日';
+										   document.getElementById("ren_cnt").innerHTML = '連読記録：'+ren_cnt+'日';
+										   document.getElementById("lat_cnt").innerHTML = '連続'+lat_cnt+'日読書達成中！！';
+									   }
+								   }
+	 function goal(date,id){
+	 }
+	 //-->
+	</script>
+	<style>
+	 .readch_cal th{
+	   width:81px;
+	 }
+	 .readch_cal tr{
+	   vertical-align: top;
+	 }
+	 .readch_cal tbody{
+	   background: #FFFFFF;
+	 }
+	 .readch_cal td{
+	   padding:0;
+	 }
+	 .cal_day{
+	   background: #E8EEF7;
+	   padding:0 2px;
+	 }
+	 .goal td{
+	   width:80px;
+	 }
+	 .goal_box{
+	   background: ;
+	   with:50px;
+	   height:40px;
+	   padding-top:19px;
+	   cursor: pointer; cursor: hand;
+	 }
+
+	 .log_list_detail{
+	   width:485px;
+	 }
+	 .log_list_thumb_detail{
+	   width:435px;
+	 }
+	 .book_box_inline{
+	   width:142px !important;
+	 }
+	</style>
+  </head>
+  <body>
+	<div id="container" class="user_page">
+	  <div id="header">
+		<div class="logo_sprite"><a href="/" onclick="_gaq.push(['_trackEvent', 'navi_logoff', 'logo']);" title="読書メーター ホームへ"><div style="text-indent: 100%; white-space: nowrap; overflow: hidden;">読書メーター</div></a></div>
+		<strong>あなたの読書量を記録・管理</strong>
+		<div style="" class="gad_header_area">
+		  <div class="gad_header">
+			<script type='text/javascript'><!--//<![CDATA[
+										   document.MAX_ct0 ='INSERT_CLICKURL_HERE';
+
+			 if (location.protocol=='https:') {
+			 } else {
+				 var m3_u = 'http://vsc.send.microad.jp/delivery/ajs.php';
+				 var m3_r = Math.floor(Math.random()*99999999999);
+				 if (!document.MAX_used) document.MAX_used = ',';
+				 document.write ("<scr"+"ipt type='text/javascript' src='"+m3_u);
+				 document.write ("?zoneid=734");
+				 document.write ('&amp;snr=2&amp;cb=' + m3_r);
+				 if (document.MAX_used != ',') document.write ("&amp;exclude=" + document.MAX_used);
+				 document.write (document.charset ? '&amp;charset='+document.charset : (document.characterSet ? '&amp;charset='+document.characterSet : ''));
+				 document.write ("&amp;loc=" + escape(window.location));
+				 if (document.referrer) document.write ("&amp;referer=" + escape(document.referrer));
+				 if (document.context) document.write ("&context=" + escape(document.context));
+				 if ((typeof(document.MAX_ct0) != 'undefined') && (document.MAX_ct0.substring(0,4) == 'http')) {
+					 document.write ("&amp;ct0=" + escape(document.MAX_ct0));
+				 }
+				 if (document.mmm_fo) document.write ("&amp;mmm_fo=1");
+				 document.write ("'><\/scr"+"ipt>");
+			 }
+			 //]]>-->
+			</script>																														</div> <!-- gad_header -->
+		</div> <!-- gad_header_area -->
+		<div class="header_ad_right">
+		</div>
+		<script>
+		 (function(){$.ajax({type: 'GET', url: '/bplan_ad.php', dataType: 'html', success: function(data) { $('.header_ad_right').append(data);}, error:function(){}});})();
+		</script>
+
+		<div id="navi">
+		  <div class="navi_inner">
+
+			<div class="navi_box navi_left_link"><a href="/" onclick="_gaq.push(['_trackEvent', 'navi_logoff', 'top']);">トップ</a></div>
+			<div class="navi_box"><a href="/about" onclick="_gaq.push(['_trackEvent', 'navi_logoff', 'about']);">読書メーターとは</a></div>
+			<div class="navi_box"><a href="/ranking" onclick="_gaq.push(['_trackEvent', 'navi_logoff', 'ranking']);">本ランキング</a></div>
+			<div class="navi_box"><a href="/author_list" onclick="_gaq.push(['_trackEvent', 'navi_logoff', 'author_list']);">作家ランキング</a></div>
+			<div class="navi_clear"></div>	</div>
+		</div>
+		<div class="navi_s">
+		  <form action="/s" method="get" name="navi_search_form" onsubmit="search_params_check(this);push_gaq('search_q',this.q.value);">
+			<input type="text" name="q" value="" class="input_q" placeholder="本のタイトル・著者名を入力"><input type="submit" value="本を検索" class="submit">
+			<div class="search_select1">
+			  <select name="si" onchange="select_change(this,1)">
+				<option value=""　selected="selected">和書</option>
+				<option value="f"  >洋書</option>
+				<option value="ks"  >Kindle</option>
+			  </select>
+			  <div id="search_select_change_text1">和書</div>
+			  <i></i>
+			</div>
+			<div class="search_select2">
+			  <select name="api" onchange="select_change(this,2);">
+				<option value="">Amazon</option>
+				<option value="itunes" >iTunes</option>
+				<option value="original" >オリジナル</option>
+				<option value="all" >全て</option>
+			  </select>
+			  <div id="search_select_change_text2">Amazon</div>
+			  <i></i>
+			</div>
+		  </form>
+		</div>
+
+		<div class="info_area" id="info_area">
+
+
+		</div></div>
+		<div id="content">
+		  <div id="side_left">
+			<div class="inner" itemscope itemtype="http://data-vocabulary.org/Person">
+			  <div class="title_right"><a href="/u/000000/rss"><img src="http://img.bookmeter.com/image/rss.gif"></a></div>						<h3 itemprop="name">test_user</h3>
+			  <div class="profile_image">
+				<img src="http://img.bookmeter.com/profile_image/normals/105/1378628074323392.jpeg" itemprop="photo">
+			  </div>
+			  <div class="profile_buttons">
+				<img src="http://img.bookmeter.com/image/email.png" style="vertical-align:middle;"> <a href="#" onclick="return suggest_login('user_message');" >メッセージを送る</a><br />							<div align="center"><div class="button_add_favorite" onclick="return suggest_login('user_favorite');"></div></div>
+				<div class="favorite_cnt_info" style="width:148px;">
+				  <a href="/u/000000/favorited_user">
+					<div class="favorite_cnt_info_inner">
+					  12人登録
+					</div>
+				  </a>
+				</div>
+			  </div>
+
+			  <div style="text-align:center;">
+				<a href="/u/000000/matome">test_userさんの1月の読書メーター</a>
+			  </div>
+			  <div class="profile">
+				<dl><dt>記録初日</dt><dd>2011年04月23日</dd></dl>
+				<dl><dt>経過日数</dt><dd>1756日
+				</dd></dl>
+				<dl><dt>読んだ本</dt><dd>264冊(1日平均0.15冊)</dd></dl>
+				<dl><dt>読んだページ</dt><dd>77242ページ(1日平均43ページ)</dd></dl>
+				<dl><dt>感想/レビュー</dt><dd><a href="/u/000000/commentlist">21件(投稿率8%)</a></dd></dl><dl class="category"><dt>本棚</dt><dd><a href="/u/000000/cat">20棚</a></dd></dl><dl itemprop="address" itemscope itemtype="http://data-vocabulary.org/Address"><dt>職業</dt><dd itemprop="role">IT関係</dd></dl><dl><dt>現住所</dt><dd itemprop="region">東京都</dd></dl><dl class="intro"><dt>自己紹介</dt><dd>私は test-user です。</dd></dl>
+			  </div>					</div>
+
+			  <div style="position:relative;float:left;">
+				<div id="side_ad" style="width:300px;">
+				  <div style="text-align:center;margin:10px 0 10px 0;">
+					<script type='text/javascript'><!--//<![CDATA[
+												   document.MAX_ct0 ='INSERT_CLICKURL_HERE';
+
+					 if (location.protocol=='https:') {
+					 } else {
+						 var m3_u = 'http://vsc.send.microad.jp/delivery/ajs.php';
+						 var m3_r = Math.floor(Math.random()*99999999999);
+						 if (!document.MAX_used) document.MAX_used = ',';
+						 document.write ("<scr"+"ipt type='text/javascript' src='"+m3_u);
+						 document.write ("?zoneid=497");
+						 document.write ('&amp;snr=2&amp;cb=' + m3_r);
+						 if (document.MAX_used != ',') document.write ("&amp;exclude=" + document.MAX_used);
+						 document.write (document.charset ? '&amp;charset='+document.charset : (document.characterSet ? '&amp;charset='+document.characterSet : ''));
+						 document.write ("&amp;loc=" + escape(window.location));
+						 if (document.referrer) document.write ("&amp;referer=" + escape(document.referrer));
+						 if (document.context) document.write ("&context=" + escape(document.context));
+						 if ((typeof(document.MAX_ct0) != 'undefined') && (document.MAX_ct0.substring(0,4) == 'http')) {
+							 document.write ("&amp;ct0=" + escape(document.MAX_ct0));
+						 }
+						 if (document.mmm_fo) document.write ("&amp;mmm_fo=1");
+						 document.write ("'><\/scr"+"ipt>");
+					 }
+					 //]]>-->
+					</script>																				</div>
+				</div>
+			  </div>
+		  </div>
+		  <div id="main_right">
+			<!-- main contents -->
+		  </div>
+		</div>
+		<div id="footer">
+		  <address>© 2008-2015 powered by 読書メーター</address>
+		  <a href="/iphone">スマートフォン・携帯</a> | <a href="/start_guide/">スタートガイド</a> | <a href="/help/">ヘルプ</a>
+		  |<a href="/media">運営会社・お問い合わせ</a> | <a href="/terms.php">利用規約</a> | <a href="/privacy.php">個人情報保護方針</a>
+		</div>
+		<script type="text/javascript" src="http://img.bookmeter.com/js/jquery.elastic.source_min.js" charset="utf-8"></script>
+		<style>
+		 .fixed {
+		   position: fixed;
+		   top: 0px;
+		 }
+		</style>
+		<script>
+		 //setTimeout(ad_scroll_set,1000);
+		 function ad_scroll_set(){
+			 if($('#footer').offset().top > 1800){
+				 var nav    = $('#side_ad'),
+					 offset = nav.offset();
+				 footertop = $('#footer').offset().top;
+				 first_side_ad_top = $('#side_ad').offset().top;
+				 ad_position = 'fixed';
+				 $(window).scroll(function () {
+					 if($(window).scrollTop() > offset.top - 10) {
+						 if($(window).width() > 950 && $(window).height() > 260){
+							 scrollTop = $(window).scrollTop();
+							 if($('#side_ad').offset().top + $('#side_ad').attr('offsetHeight') > footertop - 30 && ad_position == 'fixed'){
+							  	 nav.css('position','absolute');
+							  	 nav.css('top',footertop - 30 - $('#side_ad').offset().top - $('#side_ad').attr('offsetHeight'));
+							  	 ad_position = 'absolute';
+							 }else if((first_side_ad_top < scrollTop  && ad_position == 'fixed') || ($('#side_ad').offset().top + $('#side_ad').attr('offsetHeight') > scrollTop+$(window).height() - ($(window).height() - $('#side_ad').attr('offsetHeight')))){
+							  	 nav.css('position','fixed');
+							  	 nav.css('top',0);
+							  	 ad_position = 'fixed';
+							 }
+						 }else{
+							 nav.css('position','static');
+							 nav.css('top',0);
+						 }
+					 } else {
+						 nav.css('position','static');
+						 nav.css('top',0);
+					 }
+				 });
+			 }
+		 }
+		</script>
+	</div>
+	<div id="top" style="border-bottom:0px solid #76875a;overflow:visible;">
+	  <div class="inner">
+
+		<span class="top_single_link"><a href="/login" onclick="_gaq.push(['_trackEvent', 'navi_logoff', 'top_login']);">ログイン</a></span><span class="top_single_link" style="background:#396902;"><a href="/signup?from=top" onclick="_gaq.push(['_trackEvent', 'navi_logoff', 'top_signup']);">新規登録(無料)</a></span></div>
+	</div>
+
+	<script type="text/javascript" src="http://img.bookmeter.com/js/jquery.ah-placeholder_mini.js"></script>
+	<script>
+	 $(function() {
+		 $('[placeholder]').ahPlaceholder({
+			 placeholderColor : 'silver',
+			 placeholderAttr : 'placeholder',
+			 likeApple : false
+		 });
+	 });
+	</script>
+	<script type="text/javascript">
+	 var _gaq = _gaq || [];
+	 _gaq.push(['_setAccount', 'UA-2272188-10']);
+     _gaq.push(['_setCustomVar', 1,'login_type','off',2]);
+  	 _gaq.push(['_trackPageview']);
+
+	 (function() {
+		 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	 })();
+	</script>
+  </body>
+</html>
