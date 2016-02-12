@@ -1,4 +1,5 @@
 require 'mechanize'
+require 'yasuri'
 
 module BookmeterScraper
   class Bookmeter
@@ -88,6 +89,21 @@ module BookmeterScraper
       attributes[0] = mypage.at_css('#side_left > div.inner > h3').text
 
       Profile.new(*attributes)
+    end
+
+    def read_books(user_id)
+      raise ArgumentError unless user_id =~ /^\d+$/
+      return [] unless logged_in?
+
+      read_books_root = Yasuri.pages_root '//span[@class="now_page"]/following-sibling::span[1]/a' do
+        text_page_index '//span[@class="now_page"]/a'
+        1.upto(40) do |i|
+          send("text_book_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a")
+          send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/@href")
+        end
+      end
+      read_books_page = @agent.get(Bookmeter.read_books_uri(user_id))
+      read_books_root.inject(@agent, read_books_page)
     end
 
 
