@@ -1,0 +1,707 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:fb="http://ogp.me/ns/fb#">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<title>読書メーター - あなたの読書量をグラフで管理</title>
+	<meta name="keywords" content="読書メーター,読書,本,管理" />
+	<meta name="description" content="あなたの読書量を記録・管理" />
+	<meta http-equiv="Content-Style-Type" content="text/css">
+	<meta http-equiv="imagetoolbar" content="no" />
+	<meta name="copyright" content="&copy;読書メーター" />
+	<link href="http://img.bookmeter.com/image/favicon.ico" rel="shortcut icon" />
+	<link href="http://img.bookmeter.com/css/style.css" type="text/css" rel="stylesheet">
+	<link rel="alternate" media="handheld" href="http://bookmeter.com/m/" />
+	<!--[if IE]>
+	  <link href="http://img.bookmeter.com/css/style_ie.css?d=110127" type="text/css" rel="stylesheet">
+	<![endif]-->
+	<link rel="apple-touch-icon-precomposed" href="http://img.bookmeter.com/smartfon/image/ilogo_20130322.png" />
+	<script type="text/javascript" src="http://img.bookmeter.com/js/common.js?51" charset="utf-8"></script>
+	<script type="text/javascript" src="http://img.bookmeter.com/js/quick_add.js?16" charset="utf-8"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" ></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js" ></script>
+	<script type="text/javascript" src="http://img.bookmeter.com/js/jslb_ajax_min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="http://img.bookmeter.com/js/book.js?20130315153007" charset="utf-8"></script>
+	<script type="text/javascript" src="http://img.bookmeter.com/js/res.js?201109251754" charset="utf-8"></script>
+	<style>
+	 #content{
+	   width:950px;
+	   padding: 0px 0px;
+	   overflow: hidden;
+	 }
+	 #main_left{
+	   width:580px;
+	   float: left;
+	   border-left:1px solid #dcdcdc;
+	 }
+	 #main_left .inner{
+	   width:auto;
+	   padding: 0 0 10px 20px;
+	   overflow: hidden;
+	   margin-right: 0px;
+	 }
+	 h3{
+	   background:#fff;
+	   margin:10px 0 10px 0px;
+	   border-left:0;
+	 }
+
+	 .profile_image{
+	   width:50px;
+	   margin:0 5px 5px 0;
+	   float:left;
+	 }
+	 .profile_name{
+	   float:left;
+	 }
+	 .log_list_detail{
+	   width:465px;
+	 }
+	 .log_list_thumb_detail{
+	   width:415px;
+	 }
+	 .log_list_thumb_button{
+	   _width:100px;
+	 }
+	</style>
+	<script type="text/javascript" src="http://img.bookmeter.com/js/jquery.form.js"></script>
+	<script type="text/javascript" src="http://img.bookmeter.com/js/scrolltopcontrol.js?20130315162200"></script>
+	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/smoothness/jquery-ui.css" type="text/css" rel="stylesheet">
+	<link href="http://img.bookmeter.com/css/smoothness/jquery-ui-1.8.9.custom.css" type="text/css" rel="stylesheet">
+	<script>
+	 var first;
+	 function get_log_first(){
+		 first = 1;
+		 document.getElementById('page').value = 1;
+		 document.getElementById('log_id_loaded').value = 0;
+		 $("#status_box").append('<div id="more_loading" align="center"><img src="http://img.bookmeter.com/image/loader_green2.gif" style="margin:15px 0 0 0;"></div>');
+		 sendRequest(get_home_res,'&p=1&first=1','POST','/action/home_status.php',true,true);
+		 sendRequest(get_midoku_ch_res,'&p=1&first=1','POST','/action/midoku_ch.php',true,true);
+	 }
+	 $(window).scroll(function () {
+		 if($(window).scrollTop() > 10){
+			 var pages = parseInt(document.getElementById('pages').value);
+			 var page = parseInt(document.getElementById('page').value);
+			 var log_id_loaded = parseInt(document.getElementById('log_id_loaded').value);
+			 var next_page = page + 1;
+			 if(pages >= next_page){
+				 var distanceTop = $('#footer').offset().top - $(window).height() - 200;
+				 if ($(window).scrollTop() > distanceTop && document.getElementById('more_loading') == null){
+					 document.getElementById('page').value = next_page;
+					 $("#status_box").append('<div id="more_loading" align="center"><img src="http://img.bookmeter.com/image/loader_green2.gif" style="margin:15px 0 0 0;"></div>');
+					 sendRequest(get_home_res,'&p='+next_page+'&log_id_loaded='+log_id_loaded+'&main=&no_comment=','POST','/action/home_status.php',true,true);
+				 }
+			 }
+		 }else{
+			 //alert(1)
+		 }
+	 });
+
+	 function get_midoku_ch_res(oj){
+		 var json = eval('(' + oj.responseText + ')');
+		 var aishou_cnt = json.aishou.cnt;
+		 var favorite_cnt = json.favorite.cnt;
+		 var kyoudoku_cnt = json.kyoudoku.cnt;
+		 /*
+			if(aishou_cnt > 0){
+			$("#info_area").append('<a href="/aishou" style="background:url(http://img.bookmeter.com/image/icon_heart.png) no-repeat;padding-left:20px;">相性が更新されました！</a>');
+			}
+			if(favorite_cnt > 0){
+			$("#info_area").append('<a href="/favorite" style="background:url(http://img.bookmeter.com/image/icon_comment.png) no-repeat;padding-left:20px;">お気に入りさんの感想が'+favorite_cnt+'件あります！</a>');
+			}
+			if(kyoudoku_cnt > 0){
+			$("#info_area").append('<a href="/yomitomo" style="background:url(http://img.bookmeter.com/image/icon_comment.png) no-repeat;padding-left:20px;">共読の感想が'+kyoudoku_cnt+'件あります！</a>');
+			}
+		  */
+		 if(aishou_cnt > 0){
+			 document.getElementById("navi_box_aishou_cnt").innerHTML = '<span class="navi_box_midoku_cnt">UP</span>';
+		 }
+		 if(favorite_cnt > 0){
+			 document.getElementById("navi_box_favorite_cnt").innerHTML = '<span class="navi_box_midoku_cnt">'+favorite_cnt+'</span>';
+		 }
+		 if(kyoudoku_cnt > 0){
+			 document.getElementById("navi_box_yomitomo_cnt").innerHTML = '<span class="navi_box_midoku_cnt">'+kyoudoku_cnt+'</span>';
+		 }
+	 }
+	 function get_home_res(oj){
+		 var json = eval('(' + oj.responseText + ')');
+		 res = json.res;
+		 log_id_loaded = json.log_id_loaded;
+		 read_res();
+		 //tid = setTimeout("read_res()",800);
+	 }
+	 function read_res(){
+		 var p = document.getElementById('page').value;
+		 if(res && res != 'undefined' && res != '見つかりませんでした。'){
+			 if(p == 1){
+				 $("#status_box").prepend(res);
+				 if(document.getElementById('log_footer_ad')){
+					 document.getElementById('log_footer_ad').style.display = 'block';
+				 }
+			 }else{
+				 $("#status_box").append(res);
+			 }
+			 $("#more_loading").remove();
+			 if(first == 1){
+				 document.getElementById('pages').value = 10;
+				 first = 0;
+			 }
+			 document.getElementById('log_id_loaded').value = log_id_loaded;
+			 if(p > 1){
+				 var analytics_path = '?p='+p;
+				 _gaq.push(
+					  ['_setAccount', 'UA-2272188-10'],
+					  ['_trackPageview', '/home'+analytics_path]
+				 )
+			 }else{
+				 //1はディスプレイ変更時?
+				 var analytics_path = '';
+			 }
+			 //clearTimeout(tid);
+		 }else{
+			 //$("#status_box").append('<div style="text-align:center;padding:10px;color:#dcdcdc;">データがありません</div>');
+			 document.getElementById('pages').value = p;
+			 $("#more_loading").remove();
+		 }
+	 }
+
+
+	 function update_log_display(form){
+		 document.getElementById('page').value = 1;
+		 var t1 = form.t1.checked;
+		 var t2 = form.t2.checked;
+		 //var t3 = form.t3.checked;
+		 var t4 = form.t4.checked;
+		 var t5 = form.t5.checked;
+		 //var t6 = form.t6.checked;
+		 var t7 = form.t7.checked;
+		 if(t1){t1=1};
+		 if(t2){t2=1};
+		 //if(t3){t3=1};
+		 if(t4){t4=1};
+		 if(t5){t5=1};
+		 //if(t6){t6=1};
+		 if(t7){t7=1};
+		 document.getElementById('status_box').innerHTML = '';
+		 document.forms_update_log_display.submit.value = '読み込み中...';
+		 document.forms_update_log_display.submit.disabled = 'disabled';
+		 $("#status_box").append('<div id="more_loading" align="center"><img src="http://img.bookmeter.com/image/loader_green2.gif" style="margin:15px 0 0 0;"></div>');
+		 sendRequest(update_log_display_res,'&t1='+t1+'&t2='+t2+'&t4='+t4+'&t5='+t5+'&t7='+t7,'POST','/action/update_log_display.php',true,true);
+	 }
+	 function update_log_display_res(oj){
+		 res = decodeURIComponent(oj.responseText);
+		 //topreading
+		 //document.getElementById('status_box').innerHTML = '';
+		 tid2 = setTimeout(function(){
+			 document.forms_update_log_display.submit.value = ' 更 新 ';
+			 document.forms_update_log_display.submit.disabled = '';
+			 clearTimeout(tid2);
+		 },500);
+		 sendRequest(get_home_res,'&p=1&log_id_loaded=0','POST','/action/home_status.php',true,true);
+	 }
+	 function log_display_menu_open(status){
+		 if(status == 'block'){
+			 document.getElementById('log_display_menu').style.display = 'none';
+		 }else{
+			 document.getElementById('log_display_menu').style.display = 'block';
+		 }
+	 }
+	 function home_status_form_open(status){
+		 if(status == 'none'){
+			 $("#status_post_form_box").slideDown("slow");
+		 }else{
+			 $("#status_post_form_box").slideUp();
+		 }
+	 }
+	 function add_author_new_book_ch(elm,sei,mei,type,del_id){
+		 elm2 = elm;
+		 sei2 = sei;
+		 mei2 = mei;
+		 type2 = type;
+		 del_id2 = del_id;
+		 elm.innerHTML = '<img src="http://img.bookmeter.com/image/loader_green2.gif">';
+		 sendRequest(add_author_new_book_ch_res,'&sei='+sei+'&mei='+mei+'&type='+type+'&id='+del_id,'POST','/action/add_del_new_keyword.php',true,true);
+	 }
+	 function add_author_new_book_ch_res(oj){
+		 res = decodeURIComponent(oj.responseText);
+		 if(type2 == 'del'){
+			 elm2.innerHTML = '新刊チェック';
+			 if(sei2 && mei2){
+				 elm2.onclick = new Function('add_author_new_book_ch(this,\''+sei2+'\',\''+mei2+'\',\'seimei\');return false;');
+			 }else if(sei2 && !mei2){
+				 elm2.onclick = new Function('add_author_new_book_ch(this,\''+sei2+'\',\'\',\'sei\');return false;');
+			 }
+			 elm2.style.color = '';
+		 }else{
+			 if(res == 'over'){
+				 alert('キーワードは100個までしか登録できません。');
+				 elm2.innerHTML = '新刊チェック';
+			 }else{
+				 elm2.innerHTML = '新刊チェック解除';
+				 elm2.onclick = new Function('add_author_new_book_ch(this,\''+sei2+'\',\''+mei2+'\',\'del\','+res+');return false;');
+				 elm2.style.color = '#dcdcdc';
+			 }
+		 }
+	 }
+	</script>
+	<script type="text/javascript" src="http://img.bookmeter.com/js/amcolumn/flash/swfobject.js"></script>
+  </head>
+  <body onLoad="get_log_first();">
+	<div id="container">
+	  <div id="header">
+		<div class="logo_sprite"><a href="/" onclick="_gaq.push(['_trackEvent', 'navi', 'logo']);" title="読書メーター ホームへ"><div style="text-indent: 100%; white-space: nowrap; overflow: hidden;">読書メーター</div></a></div>
+		<strong>あなたの読書量を記録・管理</strong>
+		<div style="" class="gad_header_area">
+		  <div class="gad_header">
+			<script type='text/javascript'><!--//<![CDATA[
+										   document.MAX_ct0 ='INSERT_CLICKURL_HERE';
+
+			 if (location.protocol=='https:') {
+			 } else {
+				 var m3_u = 'http://vsc.send.microad.jp/delivery/ajs.php';
+				 var m3_r = Math.floor(Math.random()*99999999999);
+				 if (!document.MAX_used) document.MAX_used = ',';
+				 document.write ("<scr"+"ipt type='text/javascript' src='"+m3_u);
+				 document.write ("?zoneid=495");
+				 document.write ('&amp;snr=2&amp;cb=' + m3_r);
+				 if (document.MAX_used != ',') document.write ("&amp;exclude=" + document.MAX_used);
+				 document.write (document.charset ? '&amp;charset='+document.charset : (document.characterSet ? '&amp;charset='+document.characterSet : ''));
+				 document.write ("&amp;loc=" + escape(window.location));
+				 if (document.referrer) document.write ("&amp;referer=" + escape(document.referrer));
+				 if (document.context) document.write ("&context=" + escape(document.context));
+				 if ((typeof(document.MAX_ct0) != 'undefined') && (document.MAX_ct0.substring(0,4) == 'http')) {
+					 document.write ("&amp;ct0=" + escape(document.MAX_ct0));
+				 }
+				 if (document.mmm_fo) document.write ("&amp;mmm_fo=1");
+				 document.write ("'><\/scr"+"ipt>");
+			 }
+			 //]]>-->
+			</script>																														</div> <!-- gad_header -->
+		</div> <!-- gad_header_area -->
+		<div class="header_ad_right">
+		</div>
+		<script>
+		 (function(){$.ajax({type: 'GET', url: '/bplan_ad.php', dataType: 'html', success: function(data) { $('.header_ad_right').append(data);}, error:function(){}});})();
+		</script>
+
+		<div id="navi">
+		  <div class="navi_inner">
+
+			<style>
+			 .navi_box{
+			   min-width:100px;
+			   text-align:center;
+			 }
+			 .navi_box .navi_group_sub_box{
+			   text-align:left;
+			 }
+			</style>
+			<div class="navi_box navi_left_link navi_selected"><a href="/home" onclick="_gaq.push(['_trackEvent', 'navi', 'home']);">ホーム</a></div>
+			<div class="navi_box"><a href="/u/000000" onclick="_gaq.push(['_trackEvent', 'navi', 'u']);">マイページ</a></div>
+			<div class="navi_box" id="navi_box_yomitomo"><a href="/yomitomo" onclick="_gaq.push(['_trackEvent', 'navi', 'yomitomo']);">共　読</a><span id="navi_box_yomitomo_cnt"></span></div>
+			<div class="navi_box" id="navi_box_favorite"><a href="/favorite" onclick="_gaq.push(['_trackEvent', 'navi', 'favorite']);">お気に入りの感想</a><span id="navi_box_favorite_cnt"><span class="navi_box_midoku_cnt">4</span></span></div>
+			<div class="navi_box" id="navi_box_aishou" onclick="_gaq.push(['_trackEvent', 'navi', 'aishou']);"><a href="/aishou">相　性</a><span id="navi_box_aishou_cnt"><span class="navi_box_midoku_cnt">UP</span></span></div>
+			<div class="navi_box navi_group" onmouseover="navi_sub_open(1)" onmouseout="navi_sub_close(1)">
+			  <span class="navi_group_top_link"><span id="navi_top_link_1">その他 ▼</span></span>
+			  <div class="navi_group_sub_box" id="navi_sub_1">
+				<ul>
+				  <li><a href="/home?t=all_tl" onclick="_gaq.push(['_trackEvent', 'navi', 'all_tl']);">みんなのつぶやき</a></li>
+				  <li><a href="/category" onclick="_gaq.push(['_trackEvent', 'navi', 'category']);">本棚</a></li>
+				  <li><a href="/ranking" onclick="_gaq.push(['_trackEvent', 'navi', 'ranking']);">ランキング</a></li>
+				  <li><a href="/event/" onclick="_gaq.push(['_trackEvent', 'navi', 'event']);">イベント</a></li>
+				  <li><a href="/donation_rtr_2014.php" onclick="_gaq.push(['_trackEvent', 'navi', 'donation_rtr_2014']);">寄付イベント</a></li>
+				  <li><a href="/c" onclick="_gaq.push(['_trackEvent', 'navi', 'c']);">コミュニティ</a></li>
+				  <li><a href="/kenpon_list.php" onclick="_gaq.push(['_trackEvent', 'navi', 'kenpon_list']);">献本プレゼント</a></li>
+				  <li><a href="/us" onclick="_gaq.push(['_trackEvent', 'navi', 'us']);">読書家検索</a></li>
+				  <li><a href="/matome" onclick="_gaq.push(['_trackEvent', 'navi', 'matome']);">まとめ</a></li>
+				</ul>
+			  </div>
+			</div>
+			<div class="navi_clear"></div>	</div>
+		</div>
+		<div class="navi_s">
+		  <div class="navi_search_right">
+			<input type="button" class="submit" value="登録" onclick="location.href='/create_book.php'">
+		  </div>
+		  <form action="/s" method="get" name="navi_search_form" onsubmit="search_params_check(this);push_gaq('search_q',this.q.value);">
+			<input type="text" name="q" value="" class="input_q" placeholder="本のタイトル・著者名を入力"><input type="submit" value="本を検索" class="submit">
+			<div class="search_select1">
+			  <select name="si" onchange="select_change(this,1)">
+				<option value=""　selected="selected">和書</option>
+				<option value="f"  >洋書</option>
+				<option value="ks"  >Kindle</option>
+			  </select>
+			  <div id="search_select_change_text1">和書</div>
+			  <i></i>
+			</div>
+			<div class="search_select2">
+			  <select name="api" onchange="select_change(this,2);">
+				<option value="">Amazon</option>
+				<option value="itunes" >iTunes</option>
+				<option value="original" >オリジナル</option>
+				<option value="all" >全て</option>
+			  </select>
+			  <div id="search_select_change_text2">Amazon</div>
+			  <i></i>
+			</div>
+		  </form>
+		</div>
+
+		<div class="info_area" id="info_area">
+
+
+		</div></div>
+		<div id="content">
+		  <div style="width:200px;float:left;overflow:hidden;">
+			<div>
+
+			  <div class="profile_box_side">
+				<div class="home_left_profile_box_area clearfix">
+				  <div class="profile_image">
+					<a href="/u/000000" onclick="_gaq.push(['_trackEvent', 'home_left', 'my_image']);"><img src="http://img.bookmeter.com/profile_image/minis/105/1378628074323392.jpeg"></a>
+				  </div>
+				  <div class="profile_name" style="width:120px;">
+					test_user
+					<div style="position:relative;">
+					  <a href="/account" onclick="_gaq.push(['_trackEvent', 'home_left', 'account']);"><i style="top:-5px;"></i>プロフィール編集</a>
+					</div>
+				  </div>
+				</div>
+
+				<style>
+				 .home_left_book_data_area{
+				   border-bottom:1px solid #f3f3f3;
+				   padding-bottom:5px;
+				 }
+				 .home_left_book_data_area:hover{
+				   background:#f9f9f9;
+				   cursor:hand;
+				   cursor:pointer;
+				 }
+				 .home_left_book_data_area table{
+				   width:100%;
+				 }
+				 .home_left_book_data_area table td{
+				   width:50%;
+				 }
+				 .home_left_book_data_head td{
+				   font-size:11px;
+				   line-height:11px;
+				   font-weight:bold;
+				   color:#808080;
+				   padding-top:10px;
+				   padding-bottom:7px;
+				 }
+				 .home_left_book_data_left{
+				   padding:0 0 0 10px;
+				 }
+				 .home_left_book_data_right{
+				   padding:0 10px 0 0;
+				 }
+				 .home_left_book_data_center{
+				   padding:0 10px;
+				 }
+				 .home_left_book_data_inner{
+				   font-size:18px;
+				   line-height:22px;
+				   font-weight:bold;
+				   color:#759f29;
+				 }
+				 .home_left_book_data_value{
+				   font-family:sans-serif;
+				 }
+				</style>
+				<div class="home_left_book_data_area" onclick="_gaq.push(['_trackEvent', 'home_left', 'book_read_data']);location.href='/home?main=data'">
+				  <table>
+					<tr class="home_left_book_data_head">
+					  <td class="home_left_book_data_left">
+						2月の読書量
+					  </td>
+					  <td class="home_left_book_data_right">
+						先月の読書量
+					  </td>
+					</tr>
+					<tr>
+					  <td class="home_left_book_data_left">
+						<div class="home_left_book_data_inner"><span class="home_left_book_data_value">772</span><span style="font-size:10px;">ページ</span></div>
+					  </td>
+					  <td class="home_left_book_data_right">
+						<div class="home_left_book_data_inner"><span class="home_left_book_data_value">1697</span><span style="font-size:10px;">ページ</span></div>
+					  </td>
+					</tr>
+					<tr>
+					  <td class="home_left_book_data_left">
+						<div class="home_left_book_data_inner"><span class="home_left_book_data_value">3</span><span style="font-size:11px;">冊</span></div>
+					  </td>
+					  <td class="home_left_book_data_right">
+						<div class="home_left_book_data_inner"><span class="home_left_book_data_value">8</span><span style="font-size:11px;">冊</span></div>
+					  </td>
+					</tr>
+					<tr>
+					  <td class="home_left_book_data_left">
+						<div class="home_left_book_data_inner"><span class="home_left_book_data_value">59</span><span style="font-size:10px;">ページ/日</span></div>
+					  </td>
+					  <td class="home_left_book_data_right">
+						<div class="home_left_book_data_inner"><span class="home_left_book_data_value">55</span><span style="font-size:10px;">ページ/日</span></div>
+					  </td>
+					</tr>
+				  </table>
+				</div>
+
+				<div class="home_left_book_data_area" onclick="_gaq.push(['_trackEvent', 'home_left', 'comment_post_per']);location.href='/home?main=book&no_comment=1'">
+				  <table>
+					<tr class="home_left_book_data_head">
+					  <td class="home_left_book_data_center" colspan="2">
+						2月の感想投稿数
+					  </td>
+					</tr>
+					<tr>
+					  <td class="home_left_book_data_center" colspan="2">
+						<div class="home_left_book_data_inner">
+						  <div class="clearfix" style="width:100%;border:0px solid #dcdcdc;border-radius:11px;background:#dcdcdc;">
+							<div style="float:left;width:100%;height:22px;background:#dcdcdc;border-radius:11px;font-size:12px;line-height:22px;text-align:center;font-weight:normal;color:#bbb;">
+							  0件
+							</div>
+						  </div>
+						</div>
+					  </td>
+					</tr>
+				  </table>
+				</div>
+
+
+				<div style="clear:both;"></div>
+				<div class="home_menu home_menu_tl active_menu">
+				  <a href="/home" onclick="_gaq.push(['_trackEvent', 'home_left', 'home']);"><i></i>新着情報</a>
+				</div>
+
+				<div class="home_menu_border">
+				</div>
+				<div class="home_menu home_menu_book">
+				  <a href="/home?main=book" onclick="_gaq.push(['_trackEvent', 'home_left', 'book']);"><div style="float:right;">265</div><i></i>読んだ本</a>
+				</div>
+				<div class="home_menu home_menu_now">
+				  <a href="/home?main=now" onclick="_gaq.push(['_trackEvent', 'home_left', 'now']);"><div style="float:right;">1</div><i></i>読んでる本</a>
+				</div>
+				<div class="home_menu home_menu_tun">
+				  <a href="/home?main=tun" onclick="_gaq.push(['_trackEvent', 'home_left', 'tun']);"><div style="float:right;">2</div><i></i>積読本</a>
+				</div>
+				<div class="home_menu home_menu_pre">
+				  <a href="/home?main=pre" onclick="_gaq.push(['_trackEvent', 'home_left', 'pre']);"><div style="float:right;">22</div><i></i>読みたい本</a>
+				</div>
+				<div class="home_menu home_menu_data">
+				  <a href="/home?main=data" onclick="_gaq.push(['_trackEvent', 'home_left', 'data']);"><i></i>読書データ</a>
+				</div>
+				<div class="home_menu home_menu_new">
+				  <a href="/home?main=new" onclick="_gaq.push(['_trackEvent', 'home_left', 'new']);"><i></i>新刊チェック<div style="float:right;"></div></a>
+				</div>
+
+				<div class="home_menu home_menu_nice">
+				  <a href="/home?main=nice" onclick="_gaq.push(['_trackEvent', 'home_left', 'nice']);"><div style="float:right;">84</div><i></i>ナイス</a>
+				</div>
+
+				<div class="home_menu home_menu_author">
+				  <a href="/home?main=author" onclick="_gaq.push(['_trackEvent', 'home_left', 'author']);"><i></i>著者リスト<div style="float:right;"></div></a>
+				</div>
+				<div class="home_menu_border">
+				</div>
+			  </div>
+
+			  <div class="home_left_favorite_area">
+			  </div>
+			</div>
+		  </div>
+		  <!--
+			   <div style="float:right;background:;text-align:center;width:120px;margin-top:10px;">
+			   新サービス！<br />
+			   <a href="http://tabikore.com/" target="_blank"><img src="http://img.bookmeter.com/image/logo_tabikore.jpg" style="margin-bottom:5px;"><br />【旅コレ】<br />あなたの旅行を<br />コレクション</a>
+			   </div>
+			 -->
+		  <div id="main_left" style="min-height: 900px;">
+			<div class="inner" style="overflow:visible;">
+
+
+
+
+
+			  <div style="float:right;position:relative;overflow:visible;z-index:50;*margin-top:10px;">
+				<div onclick="log_display_menu_open(document.getElementById('log_display_menu').style.display);" style="border: 1px solid #e1e1e1;
+																														background: #fff;
+																														padding: 3px 15px 3px 5px;
+																														font-size: 12px;
+																														-moz-border-radius: 2px;
+																														-webkit-border-radius: 2px;
+																														border-radius: 2px;background: #efefef;display:inline-block;*display:inline;zoom:1;" class="hand">表示設定<i style="background-image: url(http://img.bookmeter.com/image/sprite/common.png?20130322);
+																																																											background-position: -106px -74px;
+																																																											display: block;
+																																																											position: absolute;
+																																																											width: 8px;
+																																																											height: 5px;
+																																																											top: 10px;
+																																																											right: 5px;
+																																																											z-index: 1;"></i></div>
+
+
+				<div id="log_display_menu" style="position:absolute;right:0px;top:26px;background:#f9f9f9;border:1px solid #dcdcdc;padding:10px;width:200px;overflow:visible;z-index:50;display:none;-moz-border-radius: 2px;
+												  -webkit-border-radius: 2px;
+												  border-radius: 2px;">
+				  <div style="float:right;">
+					<a href="#" onclick="log_display_menu_open(document.getElementById('log_display_menu').style.display);return false;">×</a>
+				  </div>
+				  <form name="forms_update_log_display" onSubmit="update_log_display(this);return false;" method="post" >
+					<ul><li><input type="checkbox" id="t1" name="t1" checked="checked"><label for="t1"> 本の登録</label></li><li><input type="checkbox" id="t2" name="t2" checked="checked"><label for="t2"> 感想・レビュー</label></li><li><input type="checkbox" id="t7" name="t7" checked="checked"><label for="t7"> つぶやき</label></li><li><input type="checkbox" id="t4" name="t4" checked="checked"><label for="t4"> お気に入り追加</label></li><li><input type="checkbox" id="t5" name="t5" checked="checked"><label for="t5"> コミュニティ</label></li></ul>
+					<input type="button" name="submit" class="submit" value=" 更 新 " onclick="update_log_display(this.form)">
+				  </form>
+				</div>
+			  </div>
+
+			  <div style="float:right;position:relative;overflow:visible;z-index:;margin-right:5px;*margin-top:10px;">
+				<div onclick="home_status_form_open(document.getElementById('status_post_form_box').style.display);" style="border: 1px solid #e1e1e1;
+																															background: #fff;
+																															padding: 3px 5px 3px 5px;
+																															font-size: 12px;
+																															-moz-border-radius: 2px;
+																															-webkit-border-radius: 2px;
+																															border-radius: 2px;background: #efefef;display:inline-block;*display:inline;zoom:1;" class="hand">つぶやく</div></div>
+
+				<h3>新着情報</h3>
+				<div>
+				  <div class="status_post_form_box" id="status_post_form_box" style="overflow:auto;display:none;">
+					<div id="status_post_form_tumb" class="status_post_form_tumb">
+					  <a href="/u/000000"><img src="http://img.bookmeter.com/profile_image/minis/105/1378628074323392.jpeg"></a>
+					</div>
+					<div id="status_post_form_textarea" class="status_post_form_textarea">
+					  <form name="forms_status" onSubmit="post_status(status_text.value,this);return false;" method="post" >
+						<textarea name="status_text" onfocus="status_form_focus(this.form,this)" onBlur="status_form_blur(this.form,this)" class="status_post_input set_textarea_rows" rows=2 onkeydown="set_textarea_rows_status(event,this)" onkeypress="set_textarea_rows_status(event,this)" onkeyup="ShowLength(value,1,140);" placeholder=""></textarea>
+						<div style="clear:left;height:1px;"></div>
+
+						<span id="uploadImage" style="height:;"></span>
+						<div style="float:left;">
+						  <input type="button" class="submit" name="submit" value="つぶやく" onclick="post_status(status_text.value,this.form)" style="display:block;" />
+						</div>
+						<input type="hidden" name="photo_file_name" id="photo_file_name" value="">
+						<input type="hidden" name="status_asin" id="status_asin" value="">
+					  </form>
+					  <span id="inputcommentlength_1" class="inputcommentlength" style="float:left;margin-top:8px;display:none;"></span>
+					  <form id="uploadForm" action="/action/post_photo.php" method="post" enctype="multipart/form-data">
+						<div id="photo_select_area">
+						  <img src="http://img.bookmeter.com/image/icon_photo_camera.png" onclick="this.style.display='none';document.getElementById('photo_select_area_input').style.display='block'" id="photo_select_camera">
+						  <div id="photo_select_area_input">
+							<input type="file" name="uploadfile" size=10 id="photo_file_select" onchange="af()" />
+						  </div>
+						</div>
+					  </form>
+
+					  <div class="sosial_media_post_custom_area">
+
+
+
+					  </div>
+
+					</div>
+				  </div>
+				</div>
+				<div id="status_box">
+				</div>
+				<form>
+				  <input type="hidden" name="pages" id="pages" value="1">
+				  <input type="hidden" name="page" id="page" value="1">
+				  <input type="hidden" name="log_id_loaded" id="log_id_loaded" value="0">
+				</form>
+			</div>
+		  </div>
+		  <div id="sides">
+
+		  </div>
+		</div>
+		<div id="footer">
+		  <address>© 2008-2015 powered by 読書メーター</address>
+		  <a href="/about">読書メーターとは</a> | <a href="/iphone">スマートフォン・携帯</a> | <a href="/c/1">リクエスト</a> | <a href="/c/2">不具合報告</a> | <a href="/start_guide/">スタートガイド</a> | <a href="/help/">ヘルプ</a> | <a href="/c/311351">改善・修正</a>
+		  |<a href="/media">運営会社・お問い合わせ</a> | <a href="/terms.php">利用規約</a> | <a href="/privacy.php">個人情報保護方針</a>
+		</div>
+		<div class="send_idea_area" style="margin-bottom:10px;">
+		  <div id="send_idea_area_inner" class="send_idea_area_inner">
+			あなたのご意見をお聞かせください
+			<div style="font-size:11px;">
+			  test_user:
+			</div>
+			<form id="idea_form" onsubmit="send_idea(this);return false;">
+			  <textarea name="idea"></textarea>
+			  <input type="submit" class="submit" value="読書メーターに意見を送る">
+			</form>
+		  </div>
+		</div>
+		<script type="text/javascript" src="http://img.bookmeter.com/js/jquery.elastic.source_min.js" charset="utf-8"></script>		</div>
+	<div id="top" style="border-bottom:0px solid #76875a;overflow:visible;">
+	  <div class="inner">
+
+
+		<span class="navi_group" onmouseover="navi_sub_open(2)" onmouseout="navi_sub_close(2)">
+		  <div class="navi_group_sub_box" id="navi_sub_2">
+			<ul style="border-bottom:#7dac33 1px solid;">
+			  <li><a href="/account" class="navi_sub_account"><i></i>アカウント設定</a></li>
+			  <li><a href="/message" class="navi_sub_message"><i></i>メッセージ</a></li>
+			  <li><a href="/loginch.php?action=logout" class="navi_sub_logout"><i></i>ログアウト</a></li>
+			</ul>
+			<ul style="border-top:#b2d778 1px solid;">
+			  <li><a href="/help/" class="navi_sub_help"><i></i>ヘルプ</a></li>
+			  <li><a href="/home?main=infomation" class="navi_sub_information"><i></i>お知らせ</a></li>
+			</ul>
+		  </div>
+		  <span class="navi_group_top_link"><img src="http://img.bookmeter.com/profile_image/minis/105/1378628074323392.jpeg" class="top_user_thumb"><a href="/u/000000" id="navi_top_link_2">test_user</a>でログイン中 ▼</span>
+		</span>
+
+		<div class="top_midoku_area" id="top_midoku_area_fav">
+		  <div class="top_midoku_box">
+			<div class="top_midoku_list_area" id="top_midoku_list_area_fav"></div>
+			<div class="top_midoku_box_inner top_midoku_box_inner_green" id="top_midoku_box_open_button_fav" onclick="navi_midoku_list_area_open('fav')"><div id="top_midoku_box_open_button_inner_fav">▼</div></div>
+			<div class="top_midoku_cnt" id="top_midoku_cnt_fav" style="display:none;" onclick="navi_midoku_list_area_open('fav')"><span>お気に入り</span></div>
+			<div class="top_midoku_total_cnt" id="top_midoku_total_cnt_fav"><div onclick="navi_midoku_list_area_open('fav')">お気に入り</div></div>
+		  </div>
+		</div>
+
+		<div class="top_midoku_area" id="top_midoku_area_res">
+		  <div class="top_midoku_box">
+			<div class="top_midoku_list_area" id="top_midoku_list_area_res"></div>
+			<div class="top_midoku_box_inner top_midoku_box_inner_green" id="top_midoku_box_open_button_res" onclick="navi_midoku_list_area_open('res')"><div id="top_midoku_box_open_button_inner_res">▼</div></div>
+			<div class="top_midoku_cnt" id="top_midoku_cnt_res" style="display:none;" onclick="navi_midoku_list_area_open('res')"><span>コメント</span></div>
+			<div class="top_midoku_total_cnt" id="top_midoku_total_cnt_res"><div onclick="navi_midoku_list_area_open('res')">コメント</div></div>
+		  </div>
+		</div>
+
+		<div class="top_midoku_area" id="top_midoku_area_nice">
+		  <div class="top_midoku_box">
+			<div class="top_midoku_list_area" id="top_midoku_list_area_nice"></div>
+			<div class="top_midoku_box_inner top_midoku_box_inner_green" id="top_midoku_box_open_button_nice" onclick="navi_midoku_list_area_open('nice')"><div id="top_midoku_box_open_button_inner_nice">▼</div></div>
+			<div class="top_midoku_cnt" id="top_midoku_cnt_nice" style="display:none;" onclick="navi_midoku_list_area_open('nice')"><span>ナイス</span></div>
+			<div class="top_midoku_total_cnt" id="top_midoku_total_cnt_nice"><div onclick="navi_midoku_list_area_open('nice')">ナイス</div></div>
+		  </div>
+		</div>
+
+
+	  </div>
+	</div>
+
+	<script type="text/javascript" src="http://img.bookmeter.com/js/jquery.ah-placeholder_mini.js"></script>
+	<script>
+	 $(function() {
+		 $('[placeholder]').ahPlaceholder({
+			 placeholderColor : 'silver',
+			 placeholderAttr : 'placeholder',
+			 likeApple : false
+		 });
+	 });
+	</script>
+	<script type="text/javascript">
+	 var _gaq = _gaq || [];
+	 _gaq.push(['_setAccount', 'UA-2272188-10']);
+     _gaq.push(['_setCustomVar', 1,'login_type','on',2]);
+  	 _gaq.push(['_trackPageview']);
+
+	 (function() {
+		 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	 })();
+	</script>
+  </body>
+</html>

@@ -33,6 +33,122 @@ RSpec.describe BookmeterScraper::Bookmeter do
     end
   end
 
+  describe '.log_in' do
+    context 'valid mail / password' do
+      let(:bookmeter) { BookmeterScraper::Bookmeter.log_in('mail', 'valid') }
+
+      before do
+        File.open('spec/fixtures/login.html') do |f|
+          stub_request(:get, 'http://bookmeter.com/login')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        stub_request(:post, 'http://bookmeter.com/login')
+          .to_return(status: 302, headers: { 'Location' => '/', 'Content-Type' => 'text/html' })
+        File.open('spec/fixtures/home.html') do |f|
+          stub_request(:get, 'http://bookmeter.com/')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        File.open('spec/fixtures/profile.html') do |f|
+          stub_request(:get, 'http://bookmeter.com/u/000000')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+      end
+
+      describe '#logged_in?' do
+        subject { bookmeter.logged_in? }
+        it { is_expected.to be_truthy }
+      end
+
+      describe '#log_in_user_id?' do
+        subject { bookmeter.log_in_user_id }
+        it { is_expected.to eq '000000' }
+      end
+    end
+
+    context 'invalid mail / password' do
+      let(:bookmeter) { BookmeterScraper::Bookmeter.log_in('mail', 'invalid') }
+
+      before do
+        File.open('spec/fixtures/login.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/login')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+      end
+
+      describe '#logged_in?' do
+        subject { bookmeter.logged_in? }
+        it { is_expected.to be_falsey }
+      end
+
+      describe '#log_in_user_id?' do
+        subject { bookmeter.log_in_user_id }
+        it { is_expected.to be_nil }
+      end
+    end
+  end
+
+  describe '#log_in' do
+    context 'valid mail / password' do
+      let(:bookmeter) { BookmeterScraper::Bookmeter.new }
+
+      before do
+        File.open('spec/fixtures/login.html') do |f|
+          stub_request(:get, 'http://bookmeter.com/login')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        stub_request(:post, 'http://bookmeter.com/login')
+          .to_return(status: 302, headers: { 'Location' => '/', 'Content-Type' => 'text/html' })
+        File.open('spec/fixtures/home.html') do |f|
+          stub_request(:get, 'http://bookmeter.com/')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        File.open('spec/fixtures/profile.html') do |f|
+          stub_request(:get, 'http://bookmeter.com/u/000000')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        bookmeter.log_in('mail', 'valid')
+      end
+
+      describe '#logged_in?' do
+        subject { bookmeter.logged_in? }
+        it { is_expected.to be_truthy }
+      end
+
+      describe '#log_in_user_id?' do
+        subject { bookmeter.log_in_user_id }
+        it { is_expected.to eq '000000' }
+      end
+    end
+
+    context 'invalid mail / password' do
+      let(:bookmeter) { BookmeterScraper::Bookmeter.new }
+
+      before do
+        File.open('spec/fixtures/login.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/login')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        bookmeter.log_in('mail', 'invalid')
+      end
+
+      describe '#logged_in?' do
+        subject { bookmeter.logged_in? }
+        it { is_expected.to be_falsey }
+      end
+
+      describe '#log_in_user_id?' do
+        subject { bookmeter.log_in_user_id }
+        it { is_expected.to be_nil }
+      end
+    end
+  end
+
   describe '#profile' do
     let(:bookmeter) { BookmeterScraper::Bookmeter.new }
     let(:profile) { bookmeter.profile('000000') }
