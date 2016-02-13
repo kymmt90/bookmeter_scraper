@@ -26,6 +26,8 @@ module BookmeterScraper
       bookshelfs_count: '本棚',
     }
 
+    attr_reader :log_in_user_id
+
     def self.mypage_uri(user_id)
       raise ArgumentError unless user_id =~ /^\d+$/
       "#{ROOT_URI}/u/#{user_id}"
@@ -48,6 +50,11 @@ module BookmeterScraper
 
       bookmeter = Bookmeter.new(agent)
       bookmeter.instance_eval { @logged_in = next_page.uri.to_s == ROOT_URI + '/' }
+      return bookmeter unless bookmeter.logged_in?
+
+      mypage = next_page.link_with(text: 'マイページ').click
+      bookmeter.instance_eval { @log_in_user_id = extract_user_id(mypage) }
+
       bookmeter
     end
 
@@ -68,6 +75,10 @@ module BookmeterScraper
         end.submit
       end
       @logged_in = next_page.uri.to_s == ROOT_URI + '/'
+      return unless logged_in?
+
+      mypage = next_page.link_with(text: 'マイページ').click
+      @log_in_user_id = extract_user_id(mypage)
     end
 
     def logged_in?
@@ -113,6 +124,10 @@ module BookmeterScraper
       agent = Mechanize.new do |a|
         a.user_agent_alias = 'Mac Safari'
       end
+    end
+
+    def extract_user_id(page)
+      page.uri.to_s.match(/\/u\/(\d+)$/)[1]
     end
   end
 
