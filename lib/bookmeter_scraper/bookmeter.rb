@@ -39,22 +39,8 @@ module BookmeterScraper
     end
 
     def self.log_in(mail, password)
-      agent = new_agent
-      next_page = nil
-      agent.get(LOGIN_URI) do |page|
-        next_page = page.form_with(action: '/login') do |form|
-          form.field_with(name: 'mail').value = mail
-          form.field_with(name: 'password').value = password
-        end.submit
-      end
-
-      bookmeter = Bookmeter.new(agent)
-      bookmeter.instance_eval { @logged_in = next_page.uri.to_s == ROOT_URI + '/' }
-      return bookmeter unless bookmeter.logged_in?
-
-      mypage = next_page.link_with(text: 'マイページ').click
-      bookmeter.instance_eval { @log_in_user_id = extract_user_id(mypage) }
-
+      bookmeter = Bookmeter.new
+      bookmeter.log_in(mail, password)
       bookmeter
     end
 
