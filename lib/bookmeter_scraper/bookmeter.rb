@@ -48,6 +48,11 @@ module BookmeterScraper
       "#{ROOT_URI}/u/#{user_id}/booklisttun"
     end
 
+    def self.wish_list_uri(user_id)
+      raise ArgumentError unless user_id =~ /^\d+$/
+      "#{ROOT_URI}/u/#{user_id}/booklistpre"
+    end
+
     def self.log_in(mail, password)
       bookmeter = Bookmeter.new
       bookmeter.log_in(mail, password)
@@ -153,6 +158,25 @@ module BookmeterScraper
       return [] if tsundoku_page.search('#main_left > div > center > a').empty?
 
       tsundoku_root.inject(@agent, tsundoku_page)
+    end
+
+    def wish_list(user_id)
+      raise ArgumentError unless user_id =~ /^\d+$/
+      return [] unless logged_in?
+
+      wish_list_root = Yasuri.pages_root '//span[@class="now_page"]/following-sibling::span[1]/a' do
+        text_page_index '//span[@class="now_page"]/a'
+        1.upto(40) do |i|
+          send("text_book_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a")
+          send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/@href")
+        end
+      end
+      wish_list_page = @agent.get(Bookmeter.wish_list_uri(user_id))
+
+      # if reading books are not found at all
+      return [] if wish_list_page.search('#main_left > div > center > a').empty?
+
+      wish_list_root.inject(@agent, wish_list_page)
     end
 
 
