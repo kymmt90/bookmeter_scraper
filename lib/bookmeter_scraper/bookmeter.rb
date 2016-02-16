@@ -104,79 +104,19 @@ module BookmeterScraper
     end
 
     def read_books(user_id)
-      raise ArgumentError unless user_id =~ /^\d+$/
-      return [] unless logged_in?
-
-      read_books_root = Yasuri.pages_root '//span[@class="now_page"]/following-sibling::span[1]/a' do
-        text_page_index '//span[@class="now_page"]/a'
-        1.upto(40) do |i|
-          send("text_book_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a")
-          send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/@href")
-        end
-      end
-      read_books_page = @agent.get(Bookmeter.read_books_uri(user_id))
-
-      # if read books are not found at all
-      return [] if read_books_page.search('#main_left > div > center > a').empty?
-
-      read_books_root.inject(@agent, read_books_page)
+      scrape_books(user_id, :read_books_uri)
     end
 
     def reading_books(user_id)
-      raise ArgumentError unless user_id =~ /^\d+$/
-      return [] unless logged_in?
-
-      reading_books_root = Yasuri.pages_root '//span[@class="now_page"]/following-sibling::span[1]/a' do
-        text_page_index '//span[@class="now_page"]/a'
-        1.upto(40) do |i|
-          send("text_book_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a")
-          send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/@href")
-        end
-      end
-      reading_books_page = @agent.get(Bookmeter.reading_books_uri(user_id))
-
-      # if reading books are not found at all
-      return [] if reading_books_page.search('#main_left > div > center > a').empty?
-
-      reading_books_root.inject(@agent, reading_books_page)
+      scrape_books(user_id, :reading_books_uri)
     end
 
     def tsundoku(user_id)
-      raise ArgumentError unless user_id =~ /^\d+$/
-      return [] unless logged_in?
-
-      tsundoku_root = Yasuri.pages_root '//span[@class="now_page"]/following-sibling::span[1]/a' do
-        text_page_index '//span[@class="now_page"]/a'
-        1.upto(40) do |i|
-          send("text_book_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a")
-          send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/@href")
-        end
-      end
-      tsundoku_page = @agent.get(Bookmeter.tsundoku_uri(user_id))
-
-      # if reading books are not found at all
-      return [] if tsundoku_page.search('#main_left > div > center > a').empty?
-
-      tsundoku_root.inject(@agent, tsundoku_page)
+      scrape_books(user_id, :tsundoku_uri)
     end
 
     def wish_list(user_id)
-      raise ArgumentError unless user_id =~ /^\d+$/
-      return [] unless logged_in?
-
-      wish_list_root = Yasuri.pages_root '//span[@class="now_page"]/following-sibling::span[1]/a' do
-        text_page_index '//span[@class="now_page"]/a'
-        1.upto(40) do |i|
-          send("text_book_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a")
-          send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/@href")
-        end
-      end
-      wish_list_page = @agent.get(Bookmeter.wish_list_uri(user_id))
-
-      # if reading books are not found at all
-      return [] if wish_list_page.search('#main_left > div > center > a').empty?
-
-      wish_list_root.inject(@agent, wish_list_page)
+      scrape_books(user_id, :wish_list_uri)
     end
 
 
@@ -190,6 +130,26 @@ module BookmeterScraper
 
     def extract_user_id(page)
       page.uri.to_s.match(/\/u\/(\d+)$/)[1]
+    end
+
+    def scrape_books(user_id, uri_method)
+      raise ArgumentError unless user_id =~ /^\d+$/
+      raise ArgumentError unless Bookmeter.methods.include?(uri_method)
+      return [] unless logged_in?
+
+      books_root = Yasuri.pages_root '//span[@class="now_page"]/following-sibling::span[1]/a' do
+        text_page_index '//span[@class="now_page"]/a'
+        1.upto(40) do |i|
+          send("text_book_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a")
+          send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/@href")
+        end
+      end
+      books_page = @agent.get(Bookmeter.method(uri_method).call(user_id))
+
+      # if books are not found at all
+      return [] if books_page.search('#main_left > div > center > a').empty?
+
+      books_root.inject(@agent, books_page)
     end
   end
 
