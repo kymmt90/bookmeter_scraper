@@ -100,6 +100,10 @@ module BookmeterScraper
         end
       end
       read_books_page = @agent.get(Bookmeter.read_books_uri(user_id))
+
+      # if read books are not found at all
+      return [] if read_books_page.search('#main_left > div > center > a').empty?
+
       read_books_root.inject(@agent, read_books_page)
     end
 
