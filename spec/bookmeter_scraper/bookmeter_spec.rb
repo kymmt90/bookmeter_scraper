@@ -251,4 +251,70 @@ RSpec.describe BookmeterScraper::Bookmeter do
       end
     end
   end
+
+  describe '#read_books' do
+    let(:bookmeter) { BookmeterScraper::Bookmeter.new }
+
+    before do
+      File.open('spec/fixtures/login.html') do |f|
+        stub_request(:get, 'http://bookmeter.com/login')
+          .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+      end
+
+      stub_request(:post, 'http://bookmeter.com/login')
+        .to_return(status: 302, headers: { 'Location' => '/', 'Content-Type' => 'text/html' })
+      File.open('spec/fixtures/home.html') do |f|
+        stub_request(:get, 'http://bookmeter.com/')
+          .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+      end
+
+      File.open('spec/fixtures/profile.html') do |f|
+        stub_request(:get, 'http://bookmeter.com/u/000000')
+          .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+      end
+    end
+
+    describe 'read books are found' do
+      before do
+        File.open('spec/fixtures/read_books.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/u/000000/booklist')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        bookmeter.log_in('mail', 'invalid')
+      end
+
+      describe '#read_books' do
+        subject { bookmeter.read_books('000000') }
+        it { is_expected.not_to be_empty }
+      end
+    end
+
+    describe 'read books are not found' do
+      before do
+        File.open('spec/fixtures/read_books_notfound.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/u/000000/booklist')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        bookmeter.log_in('mail', 'invalid')
+      end
+
+      describe '#read_books' do
+        subject { bookmeter.read_books('000000') }
+        it { is_expected.to be_empty }
+      end
+    end
+
+    describe 'not logged in' do
+      subject { bookmeter.read_books('000000') }
+      it { is_expected.to be_empty }
+    end
+
+    describe 'invalid user ID' do
+      it 'raises ArgumentError' do
+        expect { BookmeterScraper::Bookmeter.new.read_books('a00000') }.to raise_error ArgumentError
+      end
+    end
+  end
 end
