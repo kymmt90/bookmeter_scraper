@@ -54,9 +54,9 @@ module BookmeterScraper
     end
 
     def self.log_in(mail, password)
-      bookmeter = Bookmeter.new
-      bookmeter.log_in(mail, password)
-      bookmeter
+      Bookmeter.new.tap do |bookmeter|
+        bookmeter.log_in(mail, password)
+      end
     end
 
 
