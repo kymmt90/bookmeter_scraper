@@ -107,20 +107,35 @@ module BookmeterScraper
       Profile.new(*attributes)
     end
 
-    def read_books(user_id)
-      get_books(user_id, :read_books_uri)
+    def read_books(user_id = @log_in_user_id)
+      books = get_books(user_id, :read_books_uri)
+      books.each { |b| yield b } if block_given?
+      books
     end
 
-    def reading_books(user_id)
-      get_books(user_id, :reading_books_uri)
+    def read_books_in(year, month, user_id = @log_in_user_id)
+      date = Time.local(year, month)
+      books = get_read_books(user_id, date)
+      books.each { |b| yield b } if block_given?
+      books
     end
 
-    def tsundoku(user_id)
-      get_books(user_id, :tsundoku_uri)
+    def reading_books(user_id = @log_in_user_id)
+      books = get_books(user_id, :reading_books_uri)
+      books.each { |b| yield b } if block_given?
+      books
     end
 
-    def wish_list(user_id)
-      get_books(user_id, :wish_list_uri)
+    def tsundoku(user_id = @log_in_user_id)
+      books = get_books(user_id, :tsundoku_uri)
+      books.each { |b| yield b } if block_given?
+      books
+    end
+
+    def wish_list(user_id = @log_in_user_id)
+      books = get_books(user_id, :wish_list_uri)
+      books.each { |b| yield b } if block_given?
+      books
     end
 
 
