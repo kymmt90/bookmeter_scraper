@@ -155,10 +155,80 @@ module BookmeterScraper
       books = []
       scraped_pages = scrape_book_pages(user_id, uri_method)
       scraped_pages.each do |page|
-        books << get_book_structs(@agent, page)
+        books << get_book_structs(page)
         books.flatten!
       end
       books
+    end
+
+    def get_read_books(user_id, target_ym)
+      result = []
+      scrape_book_pages(user_id, :read_books_uri).each do |page|
+        first_book_date = get_read_date(page['book_1_link'])
+        last_book_date  = get_last_book_date(page)
+
+        first_book_ym = Time.local(first_book_date['year'].to_i, first_book_date['month'].to_i)
+        last_book_ym  = Time.local(last_book_date['year'].to_i, last_book_date['month'].to_i)
+
+        if target_ym < last_book_ym
+          next
+        elsif target_ym == first_book_ym && target_ym > last_book_ym
+          result.concat(get_target_books(target_ym, page))
+          break
+        elsif target_ym < first_book_ym && target_ym > last_book_ym
+          result.concat(get_target_books(target_ym, page))
+          break
+        elsif target_ym <= first_book_ym && target_ym >= last_book_ym
+          result.concat(get_target_books(target_ym, page))
+        elsif target_ym > first_book_ym
+          break
+        end
+      end
+      result
+    end
+
+    def get_last_book_date(page)
+      NUM_BOOKS_PER_PAGE.downto(1) do |i|
+        link = page["book_#{i}_link"]
+        next if link.empty?
+        return get_read_date(link)
+      end
+    end
+
+    def get_target_books(target_ym, page)
+      target_books = []
+
+      1.upto(NUM_BOOKS_PER_PAGE) do |i|
+        next if page["book_#{i}_link"].empty?
+
+        read_yms = []
+        read_date = get_read_date(page["book_#{i}_link"])
+        read_dates = [Time.local(read_date['year'], read_date['month'], read_date['day'])]
+        read_yms << Time.local(read_date['year'], read_date['month'])
+
+        reread_dates = []
+        reread_dates << get_reread_date(page["book_#{i}_link"])
+        reread_dates.flatten!
+
+        unless reread_dates.empty?
+          reread_dates.each do |date|
+            read_yms << Time.local(date['reread_year'], date['reread_month'])
+          end
+        end
+
+        next unless read_yms.include?(target_ym)
+
+        unless reread_dates.empty?
+          reread_dates.each do |date|
+            read_dates << Time.local(date['reread_year'], date['reread_month'], date['reread_day'])
+          end
+        end
+        book_name = get_book_name(page["book_#{i}_link"])
+        book = Book.new(book_name, read_dates)
+        target_books << book
+      end
+
+      target_books
     end
 
     def scrape_book_pages(user_id, uri_method)
@@ -195,40 +265,40 @@ module BookmeterScraper
       @agent.get(ROOT_URI + book_link).search('#title').text
     end
 
-    def get_read_date(agent, book_link)
-      book_page = agent.get(ROOT_URI + book_link)
+    def get_read_date(book_link)
+      book_page = @agent.get(ROOT_URI + book_link)
       book_date = Yasuri.struct_date '//*[@id="book_edit_area"]/form[1]/div[2]' do
         text_year  '//*[@id="read_date_y"]/option[1]', truncate: /\d+/, proc: :to_i
         text_month '//*[@id="read_date_m"]/option[1]', truncate: /\d+/, proc: :to_i
         text_day   '//*[@id="read_date_d"]/option[1]', truncate: /\d+/, proc: :to_i
       end
-      book_date.inject(agent, book_page)
+      book_date.inject(@agent, book_page)
     end
 
-    def get_reread_date(agent, book_link)
-      book_page = agent.get(ROOT_URI + book_link)
+    def get_reread_date(book_link)
+      book_page = @agent.get(ROOT_URI + book_link)
       book_reread_date = Yasuri.struct_reread_date '//*[@id="book_edit_area"]/div/form[1]/div[2]' do
         text_reread_year  '//div[@class="reread_box"]/form[1]/div[2]/select[1]/option[1]', truncate: /\d+/, proc: :to_i
         text_reread_month '//div[@class="reread_box"]/form[1]/div[2]/select[2]/option[1]', truncate: /\d+/, proc: :to_i
         text_reread_day   '//div[@class="reread_box"]/form[1]/div[2]/select[3]/option[1]', truncate: /\d+/, proc: :to_i
       end
-      book_reread_date.inject(agent, book_page)
+      book_reread_date.inject(@agent, book_page)
     end
 
-    def get_book_structs(agent, page)
+    def get_book_structs(page)
       books = []
 
       1.upto(NUM_BOOKS_PER_PAGE) do |i|
         break if page["book_#{i}_link"].empty?
 
         read_dates = []
-        read_date = get_read_date(agent, page["book_#{i}_link"])
+        read_date = get_read_date(page["book_#{i}_link"])
         unless read_date.empty?
           read_dates << Time.local(read_date['year'], read_date['month'], read_date['day'])
         end
 
         reread_dates = []
-        reread_dates << get_reread_date(agent, page["book_#{i}_link"])
+        reread_dates << get_reread_date(page["book_#{i}_link"])
         reread_dates.flatten!
 
         unless reread_dates.empty?
