@@ -329,7 +329,22 @@ RSpec.describe BookmeterScraper::Bookmeter do
             .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
         end
 
-        bookmeter.log_in('mail', 'invalid')
+        File.open('spec/fixtures/book_4873116864.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/b/4873116864')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        File.open('spec/fixtures/book_4873117437.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/b/4873117437')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        File.open('spec/fixtures/book_4839928401.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/b/4839928401')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        bookmeter.log_in('mail', 'valid')
       end
 
       describe '#read_books' do
@@ -395,7 +410,22 @@ RSpec.describe BookmeterScraper::Bookmeter do
             .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
         end
 
-        bookmeter.log_in('mail', 'invalid')
+        File.open('spec/fixtures/book_4873116864.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/b/4873116864')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        File.open('spec/fixtures/book_4873117437.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/b/4873117437')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        File.open('spec/fixtures/book_4839928401.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/b/4839928401')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        bookmeter.log_in('mail', 'valid')
       end
 
       describe '#reading_books' do
@@ -461,7 +491,22 @@ RSpec.describe BookmeterScraper::Bookmeter do
             .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
         end
 
-        bookmeter.log_in('mail', 'invalid')
+        File.open('spec/fixtures/book_4873116864.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/b/4873116864')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        File.open('spec/fixtures/book_4873117437.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/b/4873117437')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        File.open('spec/fixtures/book_4839928401.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/b/4839928401')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        bookmeter.log_in('mail', 'valid')
       end
 
       describe '#tsundoku' do
@@ -527,7 +572,22 @@ RSpec.describe BookmeterScraper::Bookmeter do
             .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
         end
 
-        bookmeter.log_in('mail', 'invalid')
+        File.open('spec/fixtures/book_4873116864.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/b/4873116864')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        File.open('spec/fixtures/book_4873117437.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/b/4873117437')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        File.open('spec/fixtures/book_4839928401.html') do |f|
+          stub_request(:any, 'http://bookmeter.com/b/4839928401')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+
+        bookmeter.log_in('mail', 'valid')
       end
 
       describe '#wish_list' do
