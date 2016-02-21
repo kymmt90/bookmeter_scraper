@@ -49,7 +49,7 @@ profile.reviews_count
 profile.bookshelfs_count
 ```
 
-### Get information only accessible by logged in users
+### Get books information only accessible by logged in users
 
 You can get books information which can be browsed by logged in users:
 
@@ -79,6 +79,27 @@ books[0].read_dates    # read_dates is empty
 # you can also use these methods
 bookmeter.tsundoku(user_id)
 bookmeter.wish_list(user_id)
+```
+
+### Get followings users / followers information only accessible by logged in users
+
+You can get following users (followings) and followers information which can be browsed by logged in users:
+
+```ruby
+bookmeter = BookmeterScraper::Bookmeter.log_in('example@example.com', 'password')
+bookmeter.logged_in?    # true
+
+following_users = bookmeter.followings
+followers = bookmeter.followers
+```
+
+Each user struct has its name and user ID:
+
+```ruby
+following_users[0].name
+following_users[0].id
+followers[0].name
+followers[0].id
 ```
 
 
