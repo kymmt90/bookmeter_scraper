@@ -12,6 +12,9 @@ module BookmeterScraper
     BOOK_ATTRIBUTES = %i(name read_dates)
     Book = Struct.new(*BOOK_ATTRIBUTES)
 
+    USER_ATTRIBUTES = %i(name id)
+    User = Struct.new(*USER_ATTRIBUTES)
+
     JP_ATTRIBUTE_NAMES = {
       gender: '性別',
       age: '年齢',
@@ -29,6 +32,7 @@ module BookmeterScraper
     }
 
     NUM_BOOKS_PER_PAGE = 40
+    NUM_USERS_PER_PAGE = 20
 
     attr_reader :log_in_user_id
 
@@ -55,6 +59,16 @@ module BookmeterScraper
     def self.wish_list_uri(user_id)
       raise ArgumentError unless user_id =~ /^\d+$/
       "#{ROOT_URI}/u/#{user_id}/booklistpre"
+    end
+
+    def self.followings_uri(user_id)
+      raise ArgumentError unless user_id =~ /^\d+$/
+      "#{ROOT_URI}/u/#{user_id}/favorite_user"
+    end
+
+    def self.followers_uri(user_id)
+      raise ArgumentError unless user_id =~ /^\d+$/
+      "#{ROOT_URI}/u/#{user_id}/favorited_user"
     end
 
     def self.log_in(mail, password)
@@ -138,6 +152,13 @@ module BookmeterScraper
       books
     end
 
+    def followings(user_id = @log_in_user_id)
+      users = get_followings(user_id)
+    end
+
+    def followers(user_id = @log_in_user_id)
+      users = get_followers(user_id)
+    end
 
     private
 
@@ -313,6 +334,63 @@ module BookmeterScraper
       end
 
       books
+    end
+
+    def get_followings(user_id)
+      users = []
+      scraped_pages = scrape_followings_page(user_id)
+      scraped_pages.each do |page|
+        users << get_user_structs(page)
+        users.flatten!
+      end
+      users
+    end
+
+    def get_followers(user_id)
+      users = []
+      scraped_pages = scrape_followers_page(user_id)
+      scraped_pages.each do |page|
+        users << get_user_structs(page)
+        users.flatten!
+      end
+      users
+    end
+
+    def get_user_structs(page)
+      users = []
+
+      1.upto(NUM_USERS_PER_PAGE) do |i|
+        break if page["user_#{i}_name"].empty?
+
+        user_name = page["user_#{i}_name"]
+        user_id = page["user_#{i}_link"].match(/\/u\/(\d+)$/)[1]
+        user = User.new(user_name, user_id)
+        users << user
+      end
+
+      users
+    end
+
+    def scrape_followings_page(user_id)
+      followings_page = @agent.get(Bookmeter.followings_uri(user_id))
+      followings_root = Yasuri.struct_books '//*[@id="main_left"]/div' do
+        1.upto(NUM_USERS_PER_PAGE) do |i|
+          send("text_user_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i}]/a/@title")
+          send("text_user_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i}]/a/@href")
+        end
+      end
+      [followings_root.inject(@agent, followings_page)]
+    end
+
+    def scrape_followers_page(user_id)
+      followers_page = @agent.get(Bookmeter.followers_uri(user_id))
+      followers_root = Yasuri.struct_books '//*[@id="main_left"]/div' do
+        1.upto(NUM_USERS_PER_PAGE) do |i|
+          send("text_user_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i}]/div/div[2]/a/@title")
+          send("text_user_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i}]/div/div[2]/a/@href")
+        end
+      end
+      [followers_root.inject(@agent, followers_page)]
     end
   end
 

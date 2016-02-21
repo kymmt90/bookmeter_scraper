@@ -84,6 +84,36 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
       end
     end
+
+    describe '.followings_uri' do
+      context 'valid user ID' do
+        include_context 'valid user ID'
+        subject { BookmeterScraper::Bookmeter.followings_uri(user_id) }
+        it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/favorite_user" }
+      end
+
+      context 'invalid user ID' do
+        include_context 'invalid user ID'
+        it 'raises ArgumentError' do
+          expect { BookmeterScraper::Bookmeter.followings_uri(user_id) }.to raise_error ArgumentError
+        end
+      end
+    end
+
+    describe '.followers_uri' do
+      context 'valid user ID' do
+        include_context 'valid user ID'
+        subject { BookmeterScraper::Bookmeter.followers_uri(user_id) }
+        it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/favorited_user" }
+      end
+
+      context 'invalid user ID' do
+        include_context 'invalid user ID'
+        it 'raises ArgumentError' do
+          expect { BookmeterScraper::Bookmeter.followers_uri(user_id) }.to raise_error ArgumentError
+        end
+      end
+    end
   end
 
   describe '.log_in' do
@@ -526,6 +556,65 @@ RSpec.describe BookmeterScraper::Bookmeter do
         it 'raises ArgumentError' do
           expect { BookmeterScraper::Bookmeter.new.wish_list(user_id) }.to raise_error ArgumentError
         end
+      end
+    end
+  end
+
+  describe 'fetching followings / followers methods' do
+    let(:bookmeter) { BookmeterScraper::Bookmeter.new }
+
+    before do
+      File.open('spec/fixtures/login.html') do |f|
+        stub_request(:get, 'http://bookmeter.com/login')
+          .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+      end
+
+      stub_request(:post, 'http://bookmeter.com/login')
+        .to_return(status: 302, headers: { 'Location' => '/', 'Content-Type' => 'text/html' })
+      File.open('spec/fixtures/home.html') do |f|
+        stub_request(:get, 'http://bookmeter.com/')
+          .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+      end
+
+      File.open('spec/fixtures/profile.html') do |f|
+        stub_request(:get, 'http://bookmeter.com/u/000000')
+          .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+      end
+    end
+
+    describe '#followings' do
+      before do
+        File.open('spec/fixtures/followings.html') do |f|
+          stub_request(:get, 'http://bookmeter.com/u/000000/favorite_user')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+      end
+
+      context 'found' do
+        include_context 'valid user ID'
+        before do
+          bookmeter.log_in('mail', 'password')
+        end
+        subject { bookmeter.followings(user_id) }
+        it { is_expected.not_to be_empty }
+      end
+    end
+
+    describe '#followings' do
+      before do
+        File.open('spec/fixtures/followers.html') do |f|
+          stub_request(:get, 'http://bookmeter.com/u/000000/favorited_user')
+            .to_return(body: f.read, headers: { 'Content-Type' => 'text/html' })
+        end
+      end
+
+      context 'found' do
+        include_context 'valid user ID'
+        before do
+          bookmeter.log_in('mail', 'password')
+        end
+        subject { bookmeter.followers(user_id) }
+        it { is_expected.not_to be_empty }
       end
     end
   end
