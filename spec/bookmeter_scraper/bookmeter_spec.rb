@@ -598,6 +598,12 @@ RSpec.describe BookmeterScraper::Bookmeter do
         subject { bookmeter.followings(user_id) }
         it { is_expected.not_to be_empty }
       end
+
+      context 'not logging in' do
+        include_context 'valid user ID'
+        subject { bookmeter.followings(user_id) }
+        it { is_expected.to be_empty }
+      end
     end
 
     describe '#followings' do
@@ -615,6 +621,12 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
         subject { bookmeter.followers(user_id) }
         it { is_expected.not_to be_empty }
+      end
+
+      context 'not logging in' do
+        include_context 'valid user ID'
+        subject { bookmeter.followers(user_id) }
+        it { is_expected.to be_empty }
       end
     end
   end

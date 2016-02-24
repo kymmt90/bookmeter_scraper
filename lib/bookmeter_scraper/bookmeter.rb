@@ -338,7 +338,8 @@ module BookmeterScraper
 
     def get_followings(user_id)
       users = []
-      scraped_pages = scrape_followings_page(user_id)
+      scraped_pages = user_id == @log_in_user_id ? scrape_followings_page(user_id)
+                                                 : scrape_others_followings_page(user_id)
       scraped_pages.each do |page|
         users << get_user_structs(page)
         users.flatten!
@@ -372,6 +373,9 @@ module BookmeterScraper
     end
 
     def scrape_followings_page(user_id)
+      raise ArgumentError unless user_id =~ /^\d+$/
+      return [] unless logged_in?
+
       followings_page = @agent.get(Bookmeter.followings_uri(user_id))
       followings_root = Yasuri.struct_books '//*[@id="main_left"]/div' do
         1.upto(NUM_USERS_PER_PAGE) do |i|
@@ -382,15 +386,27 @@ module BookmeterScraper
       [followings_root.inject(@agent, followings_page)]
     end
 
+    def scrape_others_followings_page(user_id)
+      scrape_users_listing_page(user_id, :followings_uri)
+    end
+
     def scrape_followers_page(user_id)
-      followers_page = @agent.get(Bookmeter.followers_uri(user_id))
-      followers_root = Yasuri.struct_books '//*[@id="main_left"]/div' do
+      scrape_users_listing_page(user_id, :followers_uri)
+    end
+
+    def scrape_users_listing_page(user_id, uri_method)
+      raise ArgumentError unless user_id =~ /^\d+$/
+      raise ArgumentError unless Bookmeter.methods.include?(uri_method)
+      return [] unless logged_in?
+
+      page = @agent.get(Bookmeter.method(uri_method).call(user_id))
+      root = Yasuri.struct_users '//*[@id="main_left"]/div' do
         1.upto(NUM_USERS_PER_PAGE) do |i|
           send("text_user_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i}]/div/div[2]/a/@title")
           send("text_user_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i}]/div/div[2]/a/@href")
         end
       end
-      [followers_root.inject(@agent, followers_page)]
+      [root.inject(@agent, page)]
     end
   end
 
