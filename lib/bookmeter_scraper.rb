@@ -1,5 +1,2 @@
-require "bookmeter_scraper/version"
-
-module BookmeterScraper
-  # Your code goes here...
-end
+require 'bookmeter_scraper/bookmeter'
+require 'bookmeter_scraper/version'
