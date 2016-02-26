@@ -57,6 +57,8 @@ You can get books information:
 
 You need to log in Bookmeter in advance to get these information.
 
+#### Read books
+
 You can get read books information by `Bookmeter#read_books`:
 
 ```ruby
@@ -72,7 +74,16 @@ books[0].name
 books[0].read_dates
 ```
 
-You can also get other information:
+To specify year-month for read books, you can use `Bookmeter#read_books_in`:
+
+```ruby
+books = bookmeter.read_books_in(2016, 1)                # get read books of the logged in user in 2016-01
+books = bookmeter.read_books_in(2016, 1, '01010101')    # get read books of a user in 2016-01
+```
+
+#### Reading books / Tsundoku / Wish list
+
+You can get other books information:
 
 - `Bookmeter#reading_books`
 - `Bookmeter#tsundoku`

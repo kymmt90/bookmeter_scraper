@@ -53,6 +53,8 @@ bookmeter.log_in('example@example.com', 'password')
 
 を取得できます。取得には事前のログインが必要です。
 
+#### 読んだ本
+
 `Bookmeter#read_books` で「読んだ本」情報が取得できます。
 
 ```ruby
@@ -67,7 +69,22 @@ books[0].name
 books[0].read_dates
 ```
 
-他の書籍情報も、それぞれ
+さらに、`Bookmeter#read_books_in` で特定年月の「読んだ本」情報が取得できます。
+
+```ruby
+books = bookmeter.read_books_in(2016, 1)                # ログインユーザが 2016 年 1 月に「読んだ本」を取得
+books = bookmeter.read_books_in(2016, 1, '01010101')    # ID で指定した他のユーザが 2016 年 1 月に「読んだ本」を取得
+```
+
+#### 読んでる本 / 積読本 / 読みたい本
+
+「読んだ本」以外の書籍情報
+
+- 読んでる本
+- 積読本
+- 読みたい本
+
+も、それぞれ
 
 - `Bookmeter#reading_books`
 - `Bookmeter#tsundoku`
