@@ -1,4 +1,4 @@
-# Bookmeter Scraper
+# Bookmeter Scraper [![Build Status](https://travis-ci.org/kymmt90/bookmeter_scraper.svg?branch=master)](https://travis-ci.org/kymmt90/bookmeter_scraper)
 
 [読書メーター](http://bookmeter.com)の情報をスクレイピングして Ruby で扱えるようにするための gem です。
 
