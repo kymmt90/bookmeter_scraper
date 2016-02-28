@@ -1,3 +1,4 @@
+require 'forwardable'
 require 'mechanize'
 require 'yasuri'
 
@@ -11,6 +12,26 @@ module BookmeterScraper
 
     BOOK_ATTRIBUTES = %i(name read_dates)
     Book = Struct.new(*BOOK_ATTRIBUTES)
+    class Books
+      extend Forwardable
+
+      def_delegator :@books, :[]
+      def_delegator :@books, :[]=
+      def_delegator :@books, :<<
+      def_delegator :@books, :each
+      def_delegator :@books, :flatten!
+
+      def initialize; @books = []; end
+
+      def concat(books)
+        books.each do |book|
+          next if @books.any? { |b| b.name == book.name && b.read_dates == book.read_dates }
+          @books << book
+        end
+      end
+
+      def to_a; @books; end
+    end
 
     USER_ATTRIBUTES = %i(name id)
     User = Struct.new(*USER_ATTRIBUTES)
@@ -124,32 +145,32 @@ module BookmeterScraper
     def read_books(user_id = @log_in_user_id)
       books = get_books(user_id, :read_books_uri)
       books.each { |b| yield b } if block_given?
-      books
+      books.to_a
     end
 
     def read_books_in(year, month, user_id = @log_in_user_id)
       date = Time.local(year, month)
       books = get_read_books(user_id, date)
       books.each { |b| yield b } if block_given?
-      books
+      books.to_a
     end
 
     def reading_books(user_id = @log_in_user_id)
       books = get_books(user_id, :reading_books_uri)
       books.each { |b| yield b } if block_given?
-      books
+      books.to_a
     end
 
     def tsundoku(user_id = @log_in_user_id)
       books = get_books(user_id, :tsundoku_uri)
       books.each { |b| yield b } if block_given?
-      books
+      books.to_a
     end
 
     def wish_list(user_id = @log_in_user_id)
       books = get_books(user_id, :wish_list_uri)
       books.each { |b| yield b } if block_given?
-      books
+      books.to_a
     end
 
     def followings(user_id = @log_in_user_id)
@@ -173,7 +194,7 @@ module BookmeterScraper
     end
 
     def get_books(user_id, uri_method)
-      books = []
+      books = Books.new
       scraped_pages = scrape_book_pages(user_id, uri_method)
       scraped_pages.each do |page|
         books << get_book_structs(page)
@@ -183,7 +204,7 @@ module BookmeterScraper
     end
 
     def get_read_books(user_id, target_ym)
-      result = []
+      result = Books.new
       scrape_book_pages(user_id, :read_books_uri).each do |page|
         first_book_date = get_read_date(page['book_1_link'])
         last_book_date  = get_last_book_date(page)
@@ -217,7 +238,7 @@ module BookmeterScraper
     end
 
     def get_target_books(target_ym, page)
-      target_books = []
+      target_books = Books.new
 
       1.upto(NUM_BOOKS_PER_PAGE) do |i|
         next if page["book_#{i}_link"].empty?
