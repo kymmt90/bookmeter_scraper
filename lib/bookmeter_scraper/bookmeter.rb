@@ -102,6 +102,7 @@ module BookmeterScraper
     def initialize(agent = nil)
       @agent = agent.nil? ? Bookmeter.new_agent : agent
       @logged_in = false
+      @book_pages = {}
     end
 
     def log_in(mail, password)
@@ -303,28 +304,31 @@ module BookmeterScraper
       books_root.inject(@agent, books_page)
     end
 
-    def get_book_name(book_link)
-      @agent.get(ROOT_URI + book_link).search('#title').text
+    def get_book_page(book_uri)
+      @book_pages[book_uri] = @agent.get(ROOT_URI + book_uri) unless @book_pages[book_uri]
+      @book_pages[book_uri]
     end
 
-    def get_read_date(book_link)
-      book_page = @agent.get(ROOT_URI + book_link)
+    def get_book_name(book_uri)
+      get_book_page(book_uri).search('#title').text
+    end
+
+    def get_read_date(book_uri)
       book_date = Yasuri.struct_date '//*[@id="book_edit_area"]/form[1]/div[2]' do
         text_year  '//*[@id="read_date_y"]/option[1]', truncate: /\d+/, proc: :to_i
         text_month '//*[@id="read_date_m"]/option[1]', truncate: /\d+/, proc: :to_i
         text_day   '//*[@id="read_date_d"]/option[1]', truncate: /\d+/, proc: :to_i
       end
-      book_date.inject(@agent, book_page)
+      book_date.inject(@agent, get_book_page(book_uri))
     end
 
-    def get_reread_date(book_link)
-      book_page = @agent.get(ROOT_URI + book_link)
+    def get_reread_date(book_uri)
       book_reread_date = Yasuri.struct_reread_date '//*[@id="book_edit_area"]/div/form[1]/div[2]' do
         text_reread_year  '//div[@class="reread_box"]/form[1]/div[2]/select[1]/option[1]', truncate: /\d+/, proc: :to_i
         text_reread_month '//div[@class="reread_box"]/form[1]/div[2]/select[2]/option[1]', truncate: /\d+/, proc: :to_i
         text_reread_day   '//div[@class="reread_box"]/form[1]/div[2]/select[3]/option[1]', truncate: /\d+/, proc: :to_i
       end
-      book_reread_date.inject(@agent, book_page)
+      book_reread_date.inject(@agent, get_book_page(book_uri))
     end
 
     def get_book_structs(page)
