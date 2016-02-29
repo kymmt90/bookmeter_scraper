@@ -10,7 +10,7 @@ module BookmeterScraper
     PROFILE_ATTRIBUTES = %i(name gender age blood_type job address url description first_day elapsed_days read_books_count read_pages_count reviews_count bookshelfs_count)
     Profile = Struct.new(*PROFILE_ATTRIBUTES)
 
-    BOOK_ATTRIBUTES = %i(name read_dates)
+    BOOK_ATTRIBUTES = %i(name author read_dates)
     Book = Struct.new(*BOOK_ATTRIBUTES)
     class Books
       extend Forwardable
@@ -25,7 +25,7 @@ module BookmeterScraper
 
       def concat(books)
         books.each do |book|
-          next if @books.any? { |b| b.name == book.name && b.read_dates == book.read_dates }
+          next if @books.any? { |b| b.name == book.name && b.author == book.author }
           @books << book
         end
       end
@@ -267,7 +267,8 @@ module BookmeterScraper
           end
         end
         book_name = get_book_name(page["book_#{i}_link"])
-        book = Book.new(book_name, read_dates)
+        book_author = get_book_author(page["book_#{i}_link"])
+        book = Book.new(book_name, book_author, read_dates)
         target_books << book
       end
 
@@ -313,6 +314,10 @@ module BookmeterScraper
       get_book_page(book_uri).search('#title').text
     end
 
+    def get_book_author(book_uri)
+      get_book_page(book_uri).search('#author_name').text
+    end
+
     def get_read_date(book_uri)
       book_date = Yasuri.struct_date '//*[@id="book_edit_area"]/form[1]/div[2]' do
         text_year  '//*[@id="read_date_y"]/option[1]', truncate: /\d+/, proc: :to_i
@@ -354,7 +359,8 @@ module BookmeterScraper
         end
 
         book_name = get_book_name(page["book_#{i}_link"])
-        book = Book.new(book_name, read_dates)
+        book_author = get_book_author(page["book_#{i}_link"])
+        book = Book.new(book_name, book_author, read_dates)
         books << book
       end
 
