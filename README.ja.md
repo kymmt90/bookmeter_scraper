@@ -28,7 +28,16 @@ require 'bookmeter_scraper'
 
 ### ログイン
 
-書籍情報、お気に入り / お気に入られユーザ情報を取得するには、`Bookmeter.log_in` でログインしておく必要があります。
+書籍情報、お気に入り / お気に入られユーザ情報を取得するには、`Bookmeter.log_in` または `Bookmeter#log_in` でログインしておく必要があります。
+
+ログイン情報の入力には以下の 2 通りの方法があります。
+
+1. 引数として渡す
+2. `config.yml` へ記述しておく
+
+#### 1. 引数として渡す
+
+以下のように `Bookmeter.log_in` へメールアドレスとパスワードを引数として渡すことで、ログインできます。
 
 ```ruby
 bookmeter = BookmeterScraper::Bookmeter.log_in('example@example.com', 'password')
@@ -40,6 +49,22 @@ bookmeter.logged_in?    # true
 ```ruby
 bookmeter = BookmeterScraper::Bookmeter.new
 bookmeter.log_in('example@example.com', 'password')
+```
+
+#### 2. `config.yml` へ記述しておく
+
+まず、以下のように YAML ファイル `config.yml` を記述し、Ruby スクリプトを実行する場所と同じディレクトリに置きます。
+
+```yml
+mail: example@example.com
+password: your_password
+```
+
+次に、引数なしで `Bookmeter.log_in` または `Bookmeter#log_in` を呼ぶと、`config.yml` からログイン情報を読みとり、ログインできます。
+
+```ruby
+bookmeter = BookmeterScraper::Bookmeter.log_in
+bookmeter.logged_in?    # true
 ```
 
 ### 書籍情報の取得
@@ -62,10 +87,17 @@ books = bookmeter.read_books        # ログインユーザの「読んだ本」
 bookmeter.read_books('01010101')    # 他のユーザの ID を指定して、そのユーザの「読んだ本」を取得
 ```
 
-書籍情報は書名 `name` と読了日（初読了日と再読日の両方）の配列 `read_dates` を属性として持つ `Struct` の配列として取得できます。
+書籍情報は
+
+- 書名 `name`
+- 著者 `author`
+- 読了日（初読了日と再読日の両方）の配列 `read_dates`
+
+を属性として持つ `Struct` の配列として取得できます。
 
 ```ruby
 books[0].name
+books[0].author
 books[0].read_dates
 ```
 
@@ -95,6 +127,7 @@ books = bookmeter.read_books_in(2016, 1, '01010101')    # ID で指定した他�
 ```ruby
 books = bookmeter.reading_books    # ログインユーザの「読んでる本」を取得
 books[0].name
+books[0].author
 books[0].read_dates    # 読了日の Array は空
 
 bookmeter.tsundoku     # ログインユーザの「積読本」を取得
