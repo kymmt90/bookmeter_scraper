@@ -41,13 +41,13 @@ RSpec.describe BookmeterScraper::Bookmeter do
     end
 
     describe '.reading_books_uri' do
-      context 'valid user ID' do
+      context 'taking valid user ID' do
         include_context 'valid user ID'
         subject { BookmeterScraper::Bookmeter.reading_books_uri(user_id) }
         it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/booklistnow" }
       end
 
-      context 'invalid user ID' do
+      context 'taking invalid user ID' do
         include_context 'invalid user ID'
         it 'raises ArgumentError' do
           expect { BookmeterScraper::Bookmeter.reading_books_uri(user_id) }.to raise_error ArgumentError
@@ -56,13 +56,13 @@ RSpec.describe BookmeterScraper::Bookmeter do
     end
 
     describe '.tsundoku_uri' do
-      context 'valid user ID' do
+      context 'taking valid user ID' do
         include_context 'valid user ID'
         subject { BookmeterScraper::Bookmeter.tsundoku_uri(user_id) }
         it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/booklisttun" }
       end
 
-      context 'invalid user ID' do
+      context 'taking invalid user ID' do
         include_context 'invalid user ID'
         it 'raises ArgumentError' do
           expect { BookmeterScraper::Bookmeter.tsundoku_uri(user_id) }.to raise_error ArgumentError
@@ -71,13 +71,13 @@ RSpec.describe BookmeterScraper::Bookmeter do
     end
 
     describe '.wish_list_uri' do
-      context 'valid user ID' do
+      context 'taking valid user ID' do
         include_context 'valid user ID'
         subject { BookmeterScraper::Bookmeter.wish_list_uri(user_id) }
         it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/booklistpre" }
       end
 
-      context 'invalid user ID' do
+      context 'taking invalid user ID' do
         include_context 'invalid user ID'
         it 'raises ArgumentError' do
           expect { BookmeterScraper::Bookmeter.wish_list_uri(user_id) }.to raise_error ArgumentError
@@ -86,13 +86,13 @@ RSpec.describe BookmeterScraper::Bookmeter do
     end
 
     describe '.followings_uri' do
-      context 'valid user ID' do
+      context 'taking valid user ID' do
         include_context 'valid user ID'
         subject { BookmeterScraper::Bookmeter.followings_uri(user_id) }
         it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/favorite_user" }
       end
 
-      context 'invalid user ID' do
+      context 'taking invalid user ID' do
         include_context 'invalid user ID'
         it 'raises ArgumentError' do
           expect { BookmeterScraper::Bookmeter.followings_uri(user_id) }.to raise_error ArgumentError
@@ -101,13 +101,13 @@ RSpec.describe BookmeterScraper::Bookmeter do
     end
 
     describe '.followers_uri' do
-      context 'valid user ID' do
+      context 'taking valid user ID' do
         include_context 'valid user ID'
         subject { BookmeterScraper::Bookmeter.followers_uri(user_id) }
         it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/favorited_user" }
       end
 
-      context 'invalid user ID' do
+      context 'taking invalid user ID' do
         include_context 'invalid user ID'
         it 'raises ArgumentError' do
           expect { BookmeterScraper::Bookmeter.followers_uri(user_id) }.to raise_error ArgumentError
@@ -131,7 +131,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
       end
     end
 
-    context 'valid mail / password' do
+    context 'taking valid mail and password' do
       before do
         File.open('spec/fixtures/login.html') do |f|
           stub_request(:get, 'http://bookmeter.com/login')
@@ -153,7 +153,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
       end
     end
 
-    context 'invalid mail / password' do
+    context 'taking invalid mail and password' do
       before do
         File.open('spec/fixtures/login.html') do |f|
           stub_request(:any, 'http://bookmeter.com/login')
@@ -337,7 +337,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
     end
   end
 
-  describe 'fetching books methods' do
+  describe 'fetching books' do
     let(:bookmeter) { BookmeterScraper::Bookmeter.new }
 
     before do
@@ -375,7 +375,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
     end
 
     describe '#read_books' do
-      context 'found' do
+      context 'taking valid user ID and read books are found' do
         include_context 'valid user ID'
         before do
           File.open('spec/fixtures/read_books.html') do |f|
@@ -388,7 +388,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         it { is_expected.not_to be_empty }
       end
 
-      context 'not found' do
+      context 'taking valid user ID and read books are not found' do
         include_context 'valid user ID'
         before do
           File.open('spec/fixtures/read_books_notfound.html') do |f|
@@ -423,7 +423,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
       end
 
-      context 'found' do
+      context 'taking valid user ID and reading books are found' do
         include_context 'valid user ID'
         before do
           File.open('spec/fixtures/read_books.html') do |f|
@@ -436,7 +436,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         it { is_expected.not_to be_empty }
       end
 
-      context 'not found' do
+      context 'taking valid user ID and reading books are not found' do
         include_context 'valid user ID'
         before do
           File.open('spec/fixtures/read_books_notfound.html') do |f|
@@ -471,7 +471,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
       end
 
-      context 'found' do
+      context 'taking valid user ID and tsundoku are found' do
         include_context 'valid user ID'
         before do
           File.open('spec/fixtures/read_books.html') do |f|
@@ -484,7 +484,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         it { is_expected.not_to be_empty }
       end
 
-      context 'not found' do
+      context 'taking valid user ID and tsundoku are not found' do
         include_context 'valid user ID'
         before do
           File.open('spec/fixtures/read_books_notfound.html') do |f|
@@ -497,7 +497,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         it { is_expected.to be_empty }
       end
 
-      context 'not logging in' do
+      context 'when not logging in' do
         include_context 'valid user ID'
         subject { bookmeter.tsundoku(user_id) }
         it { is_expected.to be_empty }
@@ -519,7 +519,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
       end
 
-      context 'found' do
+      context 'taking valid user ID and wish list are found' do
         include_context 'valid user ID'
         before do
           File.open('spec/fixtures/read_books.html') do |f|
@@ -532,7 +532,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         it { is_expected.not_to be_empty }
       end
 
-      context 'not found' do
+      context 'taking valid user ID and wish list are not found' do
         include_context 'valid user ID'
         before do
           File.open('spec/fixtures/read_books_notfound.html') do |f|
@@ -560,7 +560,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
     end
   end
 
-  describe 'fetching followings / followers methods' do
+  describe 'fetching following users and followers' do
     let(:bookmeter) { BookmeterScraper::Bookmeter.new }
 
     before do
@@ -590,7 +590,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
       end
 
-      context 'found' do
+      context 'taking valid user ID and followers are found' do
         include_context 'valid user ID'
         before do
           bookmeter.log_in('mail', 'password')
@@ -599,7 +599,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         it { is_expected.not_to be_empty }
       end
 
-      context 'not logging in' do
+      context 'when not logging in' do
         include_context 'valid user ID'
         subject { bookmeter.followings(user_id) }
         it { is_expected.to be_empty }
@@ -614,7 +614,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
       end
 
-      context 'found' do
+      context 'taking valid user ID and following users are found' do
         include_context 'valid user ID'
         before do
           bookmeter.log_in('mail', 'password')
@@ -623,7 +623,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         it { is_expected.not_to be_empty }
       end
 
-      context 'not logging in' do
+      context 'when not logging in' do
         include_context 'valid user ID'
         subject { bookmeter.followers(user_id) }
         it { is_expected.to be_empty }
