@@ -32,10 +32,19 @@ require 'bookmeter_scraper'
 
 ### Log in
 
-You need to log in Bookmeter to get books and followings / followers information by `Bookmeter.log_in`:
+You need to log in Bookmeter to get books and followings / followers information by `Bookmeter.log_in` or `Bookmeter#log_in`.
+
+There are 2 ways to input authentication information:
+
+1. Passing as arguments
+2. Writing out to `config.yml`
+
+#### 1. Passing as arguments
+
+You can log in Bookmeter by passing mail address and password to `Bookmeter.log_in`:
 
 ```ruby
-bookmeter = BookmeterScraper::Bookmeter.log_in('example@example.com', 'password')
+bookmeter = BookmeterScraper::Bookmeter.log_in('example@example.com', 'your_password')
 bookmeter.logged_in?    # true
 ```
 
@@ -45,6 +54,23 @@ bookmeter.logged_in?    # true
 bookmeter = BookmeterScraper::Bookmeter.new
 bookmeter.log_in('example@example.com', 'password')
 ```
+
+#### 2. Writing out to `config.yml`
+
+Create `config.yml` as followings and save it to the same directory as your Ruby script:
+
+```yml
+mail: example@example.com
+password: your_password
+```
+
+Now you can log in Bookmeter by calling `Bookmeter.log_in` or `Bookmeter#log_in` with no arguments:
+
+```ruby
+bookmeter = BookmeterScraper::Bookmeter.log_in
+bookmeter.logged_in?    # true
+```
+
 
 ### Get books information
 
