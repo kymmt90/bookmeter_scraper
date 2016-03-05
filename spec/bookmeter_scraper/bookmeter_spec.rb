@@ -384,8 +384,20 @@ RSpec.describe BookmeterScraper::Bookmeter do
           end
           bookmeter.log_in('mail', 'password')
         end
-        subject { bookmeter.read_books(user_id) }
-        it { is_expected.not_to be_empty }
+
+        describe 'a book' do
+          subject { bookmeter.read_books(user_id)[0] }
+          it { is_expected.not_to be_nil }
+          it { is_expected.to respond_to :name }
+          it { is_expected.to respond_to :author }
+          it { is_expected.to respond_to :read_dates }
+        end
+
+        describe 'books' do
+          subject { bookmeter.read_books(user_id) }
+          it { is_expected.not_to be_empty }
+          it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)]), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)]), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)]) }
+        end
       end
 
       context 'taking valid user ID and read books are not found' do
@@ -434,6 +446,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
         subject { bookmeter.reading_books(user_id) }
         it { is_expected.not_to be_empty }
+        it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)]), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)]), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)]) }
       end
 
       context 'taking valid user ID and reading books are not found' do
@@ -482,6 +495,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
         subject { bookmeter.tsundoku(user_id) }
         it { is_expected.not_to be_empty }
+        it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)]), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)]), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)]) }
       end
 
       context 'taking valid user ID and tsundoku are not found' do
@@ -530,6 +544,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
         subject { bookmeter.wish_list(user_id) }
         it { is_expected.not_to be_empty }
+        it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)]), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)]), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)]) }
       end
 
       context 'taking valid user ID and wish list are not found' do
@@ -595,8 +610,23 @@ RSpec.describe BookmeterScraper::Bookmeter do
         before do
           bookmeter.log_in('mail', 'password')
         end
-        subject { bookmeter.followings(user_id) }
-        it { is_expected.not_to be_empty }
+
+        describe 'a user' do
+          subject { bookmeter.followings(user_id)[0] }
+          it { is_expected.not_to be_nil }
+          it { is_expected.to respond_to :name }
+          it { is_expected.to respond_to :id }
+        end
+
+        describe 'users' do
+          subject { bookmeter.followings(user_id) }
+          it { is_expected.not_to be_empty }
+          it { is_expected.to include BookmeterScraper::Bookmeter::User.new('test_user_2', '000001'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_3', '000002'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_4', '000003'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_5', '000004'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_6', '000005') }
+        end
       end
 
       context 'when not logging in' do
@@ -619,8 +649,16 @@ RSpec.describe BookmeterScraper::Bookmeter do
         before do
           bookmeter.log_in('mail', 'password')
         end
-        subject { bookmeter.followers(user_id) }
-        it { is_expected.not_to be_empty }
+
+        describe 'users' do
+          subject { bookmeter.followers(user_id) }
+          it { is_expected.not_to be_empty }
+          it { is_expected.to include BookmeterScraper::Bookmeter::User.new('test_user_2', '000001'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_3', '000002'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_4', '000003'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_5', '000004'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_6', '000005') }
+        end
       end
 
       context 'when not logging in' do
