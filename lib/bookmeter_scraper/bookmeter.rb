@@ -4,6 +4,8 @@ require 'yasuri'
 
 module BookmeterScraper
   class Bookmeter
+    DEFAULT_CONFIG_PATH = './config.yml'.freeze
+
     ROOT_URI  = 'http://bookmeter.com'.freeze
     LOGIN_URI = "#{ROOT_URI}/login".freeze
 
@@ -92,7 +94,7 @@ module BookmeterScraper
       "#{ROOT_URI}/u/#{user_id}/favorited_user"
     end
 
-    def self.log_in(mail, password)
+    def self.log_in(mail = nil, password = nil)
       Bookmeter.new.tap do |bookmeter|
         bookmeter.log_in(mail, password)
       end
@@ -105,20 +107,22 @@ module BookmeterScraper
       @book_pages = {}
     end
 
-    def log_in(mail, password)
+    def log_in(mail = nil, password = nil)
       raise BookmeterError if @agent.nil?
 
-      next_page = nil
+      config = Configuration.new(DEFAULT_CONFIG_PATH) if mail.nil? && password.nil?
+
+      page_after_submitting_form = nil
       page = @agent.get(LOGIN_URI) do |page|
-        next_page = page.form_with(action: '/login') do |form|
-          form.field_with(name: 'mail').value = mail
-          form.field_with(name: 'password').value = password
+        page_after_submitting_form = page.form_with(action: '/login') do |form|
+          form.field_with(name: 'mail').value     = config ? config.mail     : mail
+          form.field_with(name: 'password').value = config ? config.password : password.to_s
         end.submit
       end
-      @logged_in = next_page.uri.to_s == ROOT_URI + '/'
+      @logged_in = page_after_submitting_form.uri.to_s == ROOT_URI + '/'
       return unless logged_in?
 
-      mypage = next_page.link_with(text: 'マイページ').click
+      mypage = page_after_submitting_form.link_with(text: 'マイページ').click
       @log_in_user_id = extract_user_id(mypage)
     end
 
