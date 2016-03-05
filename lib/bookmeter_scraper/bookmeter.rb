@@ -186,7 +186,9 @@ module BookmeterScraper
 
     def self.new_agent
       agent = Mechanize.new do |a|
-        a.user_agent_alias = 'Mac Safari'
+        a.user_agent_alias = Mechanize::AGENT_ALIASES.keys.reject do |ua_alias|
+          %w(Android iPad iPhone Mechanize).include?(ua_alias)
+        end.sample
       end
     end
 
