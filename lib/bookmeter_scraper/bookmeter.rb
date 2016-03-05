@@ -104,6 +104,7 @@ module BookmeterScraper
     def initialize(agent = nil)
       @agent = agent.nil? ? Bookmeter.new_agent : agent
       @logged_in = false
+      @log_in_user_id = nil
       @book_pages = {}
     end
 
