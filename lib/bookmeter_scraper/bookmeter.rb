@@ -12,7 +12,7 @@ module BookmeterScraper
     PROFILE_ATTRIBUTES = %i(name gender age blood_type job address url description first_day elapsed_days read_books_count read_pages_count reviews_count bookshelfs_count)
     Profile = Struct.new(*PROFILE_ATTRIBUTES)
 
-    BOOK_ATTRIBUTES = %i(name author read_dates image_uri)
+    BOOK_ATTRIBUTES = %i(name author read_dates uri image_uri)
     Book = Struct.new(*BOOK_ATTRIBUTES)
     class Books
       extend Forwardable
@@ -273,10 +273,11 @@ module BookmeterScraper
             read_dates << Time.local(date['reread_year'], date['reread_month'], date['reread_day'])
           end
         end
-        book_name = get_book_name(page["book_#{i}_link"])
-        book_author = get_book_author(page["book_#{i}_link"])
-        book_image_uri = get_book_image_uri(page["book_#{i}_link"])
-        book = Book.new(book_name, book_author, read_dates, book_image_uri)
+        book_path = page["book_#{i}_link"]
+        book_name = get_book_name(book_path)
+        book_author = get_book_author(book_path)
+        book_image_uri = get_book_image_uri(book_path)
+        book = Book.new(book_name, book_author, read_dates, ROOT_URI + book_path, book_image_uri)
         target_books << book
       end
 
@@ -370,11 +371,11 @@ module BookmeterScraper
           end
         end
 
-        book_page = page["book_#{i}_link"]
-        book_name = get_book_name(book_page)
-        book_author = get_book_author(book_page)
-        book_image_uri = get_book_image_uri(book_page)
-        book = Book.new(book_name, book_author, read_dates, book_image_uri)
+        book_path = page["book_#{i}_link"]
+        book_name = get_book_name(book_path)
+        book_author = get_book_author(book_path)
+        book_image_uri = get_book_image_uri(book_path)
+        book = Book.new(book_name, book_author, read_dates, ROOT_URI + book_path, book_image_uri)
         books << book
       end
 

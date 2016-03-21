@@ -391,13 +391,14 @@ RSpec.describe BookmeterScraper::Bookmeter do
           it { is_expected.to respond_to :name }
           it { is_expected.to respond_to :author }
           it { is_expected.to respond_to :read_dates }
+          it { is_expected.to respond_to :uri }
           it { is_expected.to respond_to :image_uri }
         end
 
         describe 'books' do
           subject { bookmeter.read_books(user_id) }
           it { is_expected.not_to be_empty }
-          it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
+          it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://bookmeter.com/b/4873116864', 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://bookmeter.com/b/4873117437', 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://bookmeter.com/b/4839928401', 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
         end
       end
 
@@ -447,7 +448,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
         subject { bookmeter.reading_books(user_id) }
         it { is_expected.not_to be_empty }
-        it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
+        it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://bookmeter.com/b/4873116864', 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://bookmeter.com/b/4873117437', 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://bookmeter.com/b/4839928401', 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
       end
 
       context 'taking valid user ID and reading books are not found' do
@@ -496,7 +497,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
         subject { bookmeter.tsundoku(user_id) }
         it { is_expected.not_to be_empty }
-        it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
+        it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://bookmeter.com/b/4873116864', 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://bookmeter.com/b/4873117437', 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://bookmeter.com/b/4839928401', 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
       end
 
       context 'taking valid user ID and tsundoku are not found' do
@@ -545,7 +546,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
         subject { bookmeter.wish_list(user_id) }
         it { is_expected.not_to be_empty }
-        it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
+        it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://bookmeter.com/b/4873116864', 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://bookmeter.com/b/4873117437', 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://bookmeter.com/b/4839928401', 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
       end
 
       context 'taking valid user ID and wish list are not found' do
