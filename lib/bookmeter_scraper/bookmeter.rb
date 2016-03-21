@@ -275,7 +275,8 @@ module BookmeterScraper
         end
         book_name = get_book_name(page["book_#{i}_link"])
         book_author = get_book_author(page["book_#{i}_link"])
-        book = Book.new(book_name, book_author, read_dates)
+        book_image_uri = get_book_image_uri(page["book_#{i}_link"])
+        book = Book.new(book_name, book_author, read_dates, book_image_uri)
         target_books << book
       end
 
