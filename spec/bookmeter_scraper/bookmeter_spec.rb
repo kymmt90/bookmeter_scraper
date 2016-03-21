@@ -391,6 +391,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
           it { is_expected.to respond_to :name }
           it { is_expected.to respond_to :author }
           it { is_expected.to respond_to :read_dates }
+          it { is_expected.to respond_to :image_uri }
         end
 
         describe 'books' do
