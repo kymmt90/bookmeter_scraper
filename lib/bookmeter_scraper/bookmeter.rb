@@ -96,7 +96,13 @@ module BookmeterScraper
 
     def self.log_in(mail = nil, password = nil)
       Bookmeter.new.tap do |bookmeter|
-        bookmeter.log_in(mail, password)
+        if block_given?
+          config = Configuration.new
+          yield config
+          bookmeter.log_in(config.mail, config.password)
+        else
+          bookmeter.log_in(mail, password)
+        end
       end
     end
 
@@ -111,7 +117,11 @@ module BookmeterScraper
     def log_in(mail = nil, password = nil)
       raise BookmeterError if @agent.nil?
 
-      config = Configuration.new(DEFAULT_CONFIG_PATH) if mail.nil? && password.nil?
+      config = if block_given?
+                 Configuration.new.tap { |config| yield config }
+               elsif mail.nil? && password.nil?
+                 Configuration.new(DEFAULT_CONFIG_PATH)
+               end
 
       page_after_submitting_form = nil
       page = @agent.get(LOGIN_URI) do |page|
