@@ -618,16 +618,17 @@ RSpec.describe BookmeterScraper::Bookmeter do
           it { is_expected.not_to be_nil }
           it { is_expected.to respond_to :name }
           it { is_expected.to respond_to :id }
+          it { is_expected.to respond_to :uri }
         end
 
         describe 'users' do
           subject { bookmeter.followings(user_id) }
           it { is_expected.not_to be_empty }
-          it { is_expected.to include BookmeterScraper::Bookmeter::User.new('test_user_2', '000001'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_3', '000002'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_4', '000003'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_5', '000004'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_6', '000005') }
+          it { is_expected.to include BookmeterScraper::Bookmeter::User.new('test_user_2', '000001', 'http://bookmeter.com/u/000001'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_3', '000002', 'http://bookmeter.com/u/000002'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_4', '000003', 'http://bookmeter.com/u/000003'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_5', '000004', 'http://bookmeter.com/u/000004'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_6', '000005', 'http://bookmeter.com/u/000005') }
         end
       end
 
@@ -655,11 +656,11 @@ RSpec.describe BookmeterScraper::Bookmeter do
         describe 'users' do
           subject { bookmeter.followers(user_id) }
           it { is_expected.not_to be_empty }
-          it { is_expected.to include BookmeterScraper::Bookmeter::User.new('test_user_2', '000001'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_3', '000002'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_4', '000003'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_5', '000004'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_6', '000005') }
+          it { is_expected.to include BookmeterScraper::Bookmeter::User.new('test_user_2', '000001', 'http://bookmeter.com/u/000001'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_3', '000002', 'http://bookmeter.com/u/000002'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_4', '000003', 'http://bookmeter.com/u/000003'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_5', '000004', 'http://bookmeter.com/u/000004'),
+                                      BookmeterScraper::Bookmeter::User.new('test_user_6', '000005', 'http://bookmeter.com/u/000005') }
         end
       end
 

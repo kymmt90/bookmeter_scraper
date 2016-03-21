@@ -35,7 +35,7 @@ module BookmeterScraper
       def to_a; @books; end
     end
 
-    USER_ATTRIBUTES = %i(name id)
+    USER_ATTRIBUTES = %i(name id uri)
     User = Struct.new(*USER_ATTRIBUTES)
 
     JP_ATTRIBUTE_NAMES = {
@@ -411,7 +411,7 @@ module BookmeterScraper
 
         user_name = page["user_#{i}_name"]
         user_id = page["user_#{i}_link"].match(/\/u\/(\d+)$/)[1]
-        user = User.new(user_name, user_id)
+        user = User.new(user_name, user_id, ROOT_URI + "/u/#{user_id}")
         users << user
       end
 
