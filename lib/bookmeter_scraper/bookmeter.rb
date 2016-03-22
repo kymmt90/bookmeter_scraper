@@ -1,5 +1,4 @@
 require 'forwardable'
-require 'mechanize'
 require 'yasuri'
 
 module BookmeterScraper
@@ -7,7 +6,6 @@ module BookmeterScraper
     DEFAULT_CONFIG_PATH = './config.yml'.freeze
 
     ROOT_URI  = 'http://bookmeter.com'.freeze
-    LOGIN_URI = "#{ROOT_URI}/login".freeze
 
     PROFILE_ATTRIBUTES = %i(name gender age blood_type job address url description first_day elapsed_days read_books_count read_pages_count reviews_count bookshelfs_count)
     Profile = Struct.new(*PROFILE_ATTRIBUTES)
@@ -108,7 +106,7 @@ module BookmeterScraper
 
 
     def initialize(agent = nil)
-      @agent = agent.nil? ? Bookmeter.new_agent : agent
+      @agent = agent.nil? ? Agent.new : agent
       @logged_in = false
       @log_in_user_id = nil
       @book_pages = {}
@@ -121,20 +119,15 @@ module BookmeterScraper
                  Configuration.new.tap { |config| yield config }
                elsif mail.nil? && password.nil?
                  Configuration.new(DEFAULT_CONFIG_PATH)
+               else
+                 Configuration.new.tap do |config|
+                   config.mail     = mail
+                   config.password = password
+                 end
                end
 
-      page_after_submitting_form = nil
-      page = @agent.get(LOGIN_URI) do |page|
-        page_after_submitting_form = page.form_with(action: '/login') do |form|
-          form.field_with(name: 'mail').value     = config ? config.mail     : mail
-          form.field_with(name: 'password').value = config ? config.password : password.to_s
-        end.submit
-      end
-      @logged_in = page_after_submitting_form.uri.to_s == ROOT_URI + '/'
-      return unless logged_in?
-
-      mypage = page_after_submitting_form.link_with(text: 'マイページ').click
-      @log_in_user_id = extract_user_id(mypage)
+      @log_in_user_id = @agent.log_in(config)
+      @logged_in = !@log_in_user_id.nil?
     end
 
     def logged_in?
@@ -198,18 +191,6 @@ module BookmeterScraper
     end
 
     private
-
-    def self.new_agent
-      agent = Mechanize.new do |a|
-        a.user_agent_alias = Mechanize::AGENT_ALIASES.keys.reject do |ua_alias|
-          %w(Android iPad iPhone Mechanize).include?(ua_alias)
-        end.sample
-      end
-    end
-
-    def extract_user_id(page)
-      page.uri.to_s.match(/\/u\/(\d+)$/)[1]
-    end
 
     def get_books(user_id, uri_method)
       books = Books.new
