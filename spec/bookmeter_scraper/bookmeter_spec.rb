@@ -13,14 +13,14 @@ RSpec.describe BookmeterScraper::Bookmeter do
     describe '.mypage_uri' do
       context 'taking valid user ID' do
         include_context 'valid user ID'
-        subject { BookmeterScraper::Bookmeter.mypage_uri(user_id) }
+        subject { BookmeterScraper.mypage_uri(user_id) }
         it { is_expected.to eq "http://bookmeter.com/u/#{user_id}" }
       end
 
       context 'taking invalid user ID' do
         include_context 'invalid user ID'
         it 'raises ArgumentError' do
-          expect { BookmeterScraper::Bookmeter.mypage_uri(user_id) }.to raise_error ArgumentError
+          expect { BookmeterScraper.mypage_uri(user_id) }.to raise_error ArgumentError
         end
       end
     end
@@ -28,14 +28,14 @@ RSpec.describe BookmeterScraper::Bookmeter do
     describe '.read_books_uri' do
       context 'taking valid user ID' do
         include_context 'valid user ID'
-        subject { BookmeterScraper::Bookmeter.read_books_uri(user_id) }
+        subject { BookmeterScraper.read_books_uri(user_id) }
         it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/booklist" }
       end
 
       context 'taking invalid user ID' do
         include_context 'invalid user ID'
         it 'raises ArgumentError' do
-          expect { BookmeterScraper::Bookmeter.read_books_uri(user_id) }.to raise_error ArgumentError
+          expect { BookmeterScraper.read_books_uri(user_id) }.to raise_error ArgumentError
         end
       end
     end
@@ -43,14 +43,14 @@ RSpec.describe BookmeterScraper::Bookmeter do
     describe '.reading_books_uri' do
       context 'taking valid user ID' do
         include_context 'valid user ID'
-        subject { BookmeterScraper::Bookmeter.reading_books_uri(user_id) }
+        subject { BookmeterScraper.reading_books_uri(user_id) }
         it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/booklistnow" }
       end
 
       context 'taking invalid user ID' do
         include_context 'invalid user ID'
         it 'raises ArgumentError' do
-          expect { BookmeterScraper::Bookmeter.reading_books_uri(user_id) }.to raise_error ArgumentError
+          expect { BookmeterScraper.reading_books_uri(user_id) }.to raise_error ArgumentError
         end
       end
     end
@@ -58,14 +58,14 @@ RSpec.describe BookmeterScraper::Bookmeter do
     describe '.tsundoku_uri' do
       context 'taking valid user ID' do
         include_context 'valid user ID'
-        subject { BookmeterScraper::Bookmeter.tsundoku_uri(user_id) }
+        subject { BookmeterScraper.tsundoku_uri(user_id) }
         it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/booklisttun" }
       end
 
       context 'taking invalid user ID' do
         include_context 'invalid user ID'
         it 'raises ArgumentError' do
-          expect { BookmeterScraper::Bookmeter.tsundoku_uri(user_id) }.to raise_error ArgumentError
+          expect { BookmeterScraper.tsundoku_uri(user_id) }.to raise_error ArgumentError
         end
       end
     end
@@ -73,14 +73,14 @@ RSpec.describe BookmeterScraper::Bookmeter do
     describe '.wish_list_uri' do
       context 'taking valid user ID' do
         include_context 'valid user ID'
-        subject { BookmeterScraper::Bookmeter.wish_list_uri(user_id) }
+        subject { BookmeterScraper.wish_list_uri(user_id) }
         it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/booklistpre" }
       end
 
       context 'taking invalid user ID' do
         include_context 'invalid user ID'
         it 'raises ArgumentError' do
-          expect { BookmeterScraper::Bookmeter.wish_list_uri(user_id) }.to raise_error ArgumentError
+          expect { BookmeterScraper.wish_list_uri(user_id) }.to raise_error ArgumentError
         end
       end
     end
@@ -88,14 +88,14 @@ RSpec.describe BookmeterScraper::Bookmeter do
     describe '.followings_uri' do
       context 'taking valid user ID' do
         include_context 'valid user ID'
-        subject { BookmeterScraper::Bookmeter.followings_uri(user_id) }
+        subject { BookmeterScraper.followings_uri(user_id) }
         it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/favorite_user" }
       end
 
       context 'taking invalid user ID' do
         include_context 'invalid user ID'
         it 'raises ArgumentError' do
-          expect { BookmeterScraper::Bookmeter.followings_uri(user_id) }.to raise_error ArgumentError
+          expect { BookmeterScraper.followings_uri(user_id) }.to raise_error ArgumentError
         end
       end
     end
@@ -103,14 +103,14 @@ RSpec.describe BookmeterScraper::Bookmeter do
     describe '.followers_uri' do
       context 'taking valid user ID' do
         include_context 'valid user ID'
-        subject { BookmeterScraper::Bookmeter.followers_uri(user_id) }
+        subject { BookmeterScraper.followers_uri(user_id) }
         it { is_expected.to eq "http://bookmeter.com/u/#{user_id}/favorited_user" }
       end
 
       context 'taking invalid user ID' do
         include_context 'invalid user ID'
         it 'raises ArgumentError' do
-          expect { BookmeterScraper::Bookmeter.followers_uri(user_id) }.to raise_error ArgumentError
+          expect { BookmeterScraper.followers_uri(user_id) }.to raise_error ArgumentError
         end
       end
     end
@@ -502,7 +502,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         describe 'books' do
           subject { bookmeter.read_books(user_id) }
           it { is_expected.not_to be_empty }
-          it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://bookmeter.com/b/4873116864', 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://bookmeter.com/b/4873117437', 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://bookmeter.com/b/4839928401', 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
+          it { is_expected.to include BookmeterScraper::Scraper::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://bookmeter.com/b/4873116864', 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Scraper::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://bookmeter.com/b/4873117437', 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Scraper::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://bookmeter.com/b/4839928401', 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
         end
       end
 
@@ -552,7 +552,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
         subject { bookmeter.reading_books(user_id) }
         it { is_expected.not_to be_empty }
-        it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://bookmeter.com/b/4873116864', 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://bookmeter.com/b/4873117437', 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://bookmeter.com/b/4839928401', 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
+        it { is_expected.to include BookmeterScraper::Scraper::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://bookmeter.com/b/4873116864', 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Scraper::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://bookmeter.com/b/4873117437', 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Scraper::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://bookmeter.com/b/4839928401', 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
       end
 
       context 'taking valid user ID and reading books are not found' do
@@ -601,7 +601,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
         subject { bookmeter.tsundoku(user_id) }
         it { is_expected.not_to be_empty }
-        it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://bookmeter.com/b/4873116864', 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://bookmeter.com/b/4873117437', 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://bookmeter.com/b/4839928401', 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
+        it { is_expected.to include BookmeterScraper::Scraper::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://bookmeter.com/b/4873116864', 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Scraper::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://bookmeter.com/b/4873117437', 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Scraper::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://bookmeter.com/b/4839928401', 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
       end
 
       context 'taking valid user ID and tsundoku are not found' do
@@ -650,7 +650,7 @@ RSpec.describe BookmeterScraper::Bookmeter do
         end
         subject { bookmeter.wish_list(user_id) }
         it { is_expected.not_to be_empty }
-        it { is_expected.to include BookmeterScraper::Bookmeter::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://bookmeter.com/b/4873116864', 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://bookmeter.com/b/4873117437', 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Bookmeter::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://bookmeter.com/b/4839928401', 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
+        it { is_expected.to include BookmeterScraper::Scraper::Book.new('Web API: The Good Parts', '水野貴明', [Time.local(2016, 2, 6)], 'http://bookmeter.com/b/4873116864', 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'), BookmeterScraper::Scraper::Book.new('メタプログラミングRuby 第2版', 'PaoloPerrotta', [Time.local(2016, 2, 2)], 'http://bookmeter.com/b/4873117437', 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'), BookmeterScraper::Scraper::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]', 'RobinWilliams', [Time.local(2015, 4, 28), Time.local(2016, 1, 10)], 'http://bookmeter.com/b/4839928401', 'http://ecx.images-amazon.com/images/I/41nvddaG9BL._SX230_.jpg') }
       end
 
       context 'taking valid user ID and wish list are not found' do
@@ -728,11 +728,11 @@ RSpec.describe BookmeterScraper::Bookmeter do
         describe 'users' do
           subject { bookmeter.followings(user_id) }
           it { is_expected.not_to be_empty }
-          it { is_expected.to include BookmeterScraper::Bookmeter::User.new('test_user_2', '000001', 'http://bookmeter.com/u/000001'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_3', '000002', 'http://bookmeter.com/u/000002'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_4', '000003', 'http://bookmeter.com/u/000003'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_5', '000004', 'http://bookmeter.com/u/000004'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_6', '000005', 'http://bookmeter.com/u/000005') }
+          it { is_expected.to include BookmeterScraper::Scraper::User.new('test_user_2', '000001', 'http://bookmeter.com/u/000001'),
+                                      BookmeterScraper::Scraper::User.new('test_user_3', '000002', 'http://bookmeter.com/u/000002'),
+                                      BookmeterScraper::Scraper::User.new('test_user_4', '000003', 'http://bookmeter.com/u/000003'),
+                                      BookmeterScraper::Scraper::User.new('test_user_5', '000004', 'http://bookmeter.com/u/000004'),
+                                      BookmeterScraper::Scraper::User.new('test_user_6', '000005', 'http://bookmeter.com/u/000005') }
         end
       end
 
@@ -760,11 +760,11 @@ RSpec.describe BookmeterScraper::Bookmeter do
         describe 'users' do
           subject { bookmeter.followers(user_id) }
           it { is_expected.not_to be_empty }
-          it { is_expected.to include BookmeterScraper::Bookmeter::User.new('test_user_2', '000001', 'http://bookmeter.com/u/000001'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_3', '000002', 'http://bookmeter.com/u/000002'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_4', '000003', 'http://bookmeter.com/u/000003'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_5', '000004', 'http://bookmeter.com/u/000004'),
-                                      BookmeterScraper::Bookmeter::User.new('test_user_6', '000005', 'http://bookmeter.com/u/000005') }
+          it { is_expected.to include BookmeterScraper::Scraper::User.new('test_user_2', '000001', 'http://bookmeter.com/u/000001'),
+                                      BookmeterScraper::Scraper::User.new('test_user_3', '000002', 'http://bookmeter.com/u/000002'),
+                                      BookmeterScraper::Scraper::User.new('test_user_4', '000003', 'http://bookmeter.com/u/000003'),
+                                      BookmeterScraper::Scraper::User.new('test_user_5', '000004', 'http://bookmeter.com/u/000004'),
+                                      BookmeterScraper::Scraper::User.new('test_user_6', '000005', 'http://bookmeter.com/u/000005') }
         end
       end
 
