@@ -98,7 +98,7 @@ module BookmeterScraper
         book = Book.new(book_name,
                         book_author,
                         read_dates,
-                        BookmeterScraper::ROOT_URI + book_path,
+                        ROOT_URI + book_path,
                         book_image_uri)
         books << book
       end
@@ -135,7 +135,7 @@ module BookmeterScraper
 
         user_name = page["user_#{i}_name"]
         user_id = page["user_#{i}_link"].match(/\/u\/(\d+)$/)[1]
-        user = User.new(user_name, user_id, BookmeterScraper::ROOT_URI + "/u/#{user_id}")
+        user = User.new(user_name, user_id, ROOT_URI + "/u/#{user_id}")
         users << user
       end
 
@@ -218,7 +218,7 @@ module BookmeterScraper
         book_name = get_book_name(book_path)
         book_author = get_book_author(book_path)
         book_image_uri = get_book_image_uri(book_path)
-        book = Book.new(book_name, book_author, read_dates, BookmeterScraper::ROOT_URI + book_path, book_image_uri)
+        book = Book.new(book_name, book_author, read_dates, ROOT_URI + book_path, book_image_uri)
         target_books << book
       end
 
@@ -245,7 +245,7 @@ module BookmeterScraper
     end
 
     def get_book_page(book_uri, agent = @agent)
-      @book_pages[book_uri] = agent.get(BookmeterScraper::ROOT_URI + book_uri) unless @book_pages[book_uri]
+      @book_pages[book_uri] = agent.get(ROOT_URI + book_uri) unless @book_pages[book_uri]
       @book_pages[book_uri]
     end
 
