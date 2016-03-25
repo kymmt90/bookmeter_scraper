@@ -227,7 +227,7 @@ module BookmeterScraper
 
 
     def profile(user_id, agent = @agent)
-      raise ArgumentError unless user_id =~ /^\d+$/
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
       raise BookmeterError if agent.nil?
 
       mypage = agent.get(BookmeterScraper.mypage_uri(user_id))
@@ -262,7 +262,7 @@ module BookmeterScraper
     end
 
     def scrape_book_pages(user_id, uri_method, agent = @agent)
-      raise ArgumentError unless user_id =~ /^\d+$/
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
       raise ArgumentError unless BookmeterScraper.methods.include?(uri_method)
       raise BookmeterError if agent.nil?
       return [] unless agent.logged_in?
@@ -311,7 +311,7 @@ module BookmeterScraper
     end
 
     def scrape_followings_page(user_id, agent = @agent)
-      raise ArgumentError unless user_id =~ /^\d+$/
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
       return [] unless agent.logged_in?
 
       followings_page = agent.get(BookmeterScraper.followings_uri(user_id))
@@ -325,7 +325,7 @@ module BookmeterScraper
     end
 
     def scrape_users_listing_page(user_id, uri_method, agent = @agent)
-      raise ArgumentError unless user_id =~ /^\d+$/
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
       raise ArgumentError unless BookmeterScraper.methods.include?(uri_method)
       return [] unless agent.logged_in?
 
