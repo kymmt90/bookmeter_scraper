@@ -44,6 +44,7 @@ module BookmeterScraper
       def_delegator :@books, :<<
       def_delegator :@books, :each
       def_delegator :@books, :flatten!
+      def_delegator :@books, :empty?
 
       def initialize; @books = []; end
 
@@ -63,10 +64,53 @@ module BookmeterScraper
     NUM_BOOKS_PER_PAGE = 40
     NUM_USERS_PER_PAGE = 20
 
+    attr_accessor :agent
+
 
     def initialize(agent = nil)
       @agent = agent
       @book_pages = {}
+    end
+
+    def get_books(user_id, uri_method)
+      books = Books.new
+      scraped_pages = scrape_book_pages(user_id, uri_method)
+      scraped_pages.each do |page|
+        books << get_book_structs(page)
+        books.flatten!
+      end
+      books
+    end
+
+    def scrape_book_pages(user_id, uri_method, agent = @agent)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+      raise ArgumentError unless BookmeterScraper.methods.include?(uri_method)
+      raise BookmeterError if agent.nil?
+      return [] unless agent.logged_in?
+
+      books_page = agent.get(BookmeterScraper.method(uri_method).call(user_id))
+
+      # if books are not found at all
+      return [] if books_page.search('#main_left > div > center > a').empty?
+
+      if books_page.search('span.now_page').empty?
+        books_root = Yasuri.struct_books '//*[@id="main_left"]/div' do
+          1.upto(NUM_BOOKS_PER_PAGE) do |i|
+            send("text_book_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a")
+            send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/href")
+          end
+        end
+        return [books_root.inject(agent, books_page)]
+      end
+
+      books_root = Yasuri.pages_root '//span[@class="now_page"]/following-sibling::span[1]/a' do
+        text_page_index '//span[@class="now_page"]/a'
+        1.upto(NUM_BOOKS_PER_PAGE) do |i|
+          send("text_book_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a")
+          send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/@href")
+        end
+      end
+      books_root.inject(agent, books_page)
     end
 
     def get_book_structs(page)
@@ -107,6 +151,10 @@ module BookmeterScraper
     end
 
     def get_followings(user_id, agent = @agent)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+      raise BookmeterError if agent.nil?
+      return [] unless agent.logged_in?
+
       users = []
       scraped_pages = user_id == agent.log_in_user_id ? scrape_followings_page(user_id)
                                                       : scrape_others_followings_page(user_id)
@@ -118,6 +166,10 @@ module BookmeterScraper
     end
 
     def get_followers(user_id)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+      raise BookmeterError if agent.nil?
+      return [] unless agent.logged_in?
+
       users = []
       scraped_pages = scrape_followers_page(user_id)
       scraped_pages.each do |page|
@@ -140,16 +192,6 @@ module BookmeterScraper
       end
 
       users
-    end
-
-    def get_books(user_id, uri_method)
-      books = Books.new
-      scraped_pages = scrape_book_pages(user_id, uri_method)
-      scraped_pages.each do |page|
-        books << get_book_structs(page)
-        books.flatten!
-      end
-      books
     end
 
     def get_read_books(user_id, target_ym)
@@ -259,37 +301,6 @@ module BookmeterScraper
 
     def get_book_image_uri(book_uri)
       get_book_page(book_uri).search('//*[@id="book_image"]/@src').text
-    end
-
-    def scrape_book_pages(user_id, uri_method, agent = @agent)
-      raise ArgumentError unless user_id =~ USER_ID_REGEX
-      raise ArgumentError unless BookmeterScraper.methods.include?(uri_method)
-      raise BookmeterError if agent.nil?
-      return [] unless agent.logged_in?
-
-      books_page = agent.get(BookmeterScraper.method(uri_method).call(user_id))
-
-      # if books are not found at all
-      return [] if books_page.search('#main_left > div > center > a').empty?
-
-      if books_page.search('span.now_page').empty?
-        books_root = Yasuri.struct_books '//*[@id="main_left"]/div' do
-          1.upto(NUM_BOOKS_PER_PAGE) do |i|
-            send("text_book_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a")
-            send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/href")
-          end
-        end
-        return [books_root.inject(agent, books_page)]
-      end
-
-      books_root = Yasuri.pages_root '//span[@class="now_page"]/following-sibling::span[1]/a' do
-        text_page_index '//span[@class="now_page"]/a'
-        1.upto(NUM_BOOKS_PER_PAGE) do |i|
-          send("text_book_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a")
-          send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/@href")
-        end
-      end
-      books_root.inject(agent, books_page)
     end
 
     def get_read_date(book_uri, agent = @agent)

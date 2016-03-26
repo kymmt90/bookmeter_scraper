@@ -16,7 +16,10 @@ RSpec.describe BookmeterScraper::Configuration do
     context 'taking valid configuration file' do
       include_context 'valid configuration file'
 
-      let(:configuration) { BookmeterScraper::Configuration.new(configuration_filename) }
+      let(:configuration) do
+        BookmeterScraper::Configuration.new(configuration_filename)
+      end
+
       subject { configuration.mail }
       it { is_expected.to eq valid_mail }
     end
@@ -24,10 +27,13 @@ RSpec.describe BookmeterScraper::Configuration do
     context 'taking invalid configuration file' do
       include_context 'invalid configuration file'
 
-      let(:configuration) { BookmeterScraper::Configuration.new(configuration_filename) }
-      subject { configuration.mail }
+      let(:configuration) do
+        BookmeterScraper::Configuration.new(configuration_filename)
+      end
+
       it 'raises ConfigurationError' do
-        expect { BookmeterScraper::Configuration.new(configuration_filename) }.to raise_error BookmeterScraper::ConfigurationError
+        expect { BookmeterScraper::Configuration.new(configuration_filename) }
+          .to raise_error BookmeterScraper::ConfigurationError
       end
     end
   end
@@ -36,7 +42,10 @@ RSpec.describe BookmeterScraper::Configuration do
     context 'taking valid configuration file' do
       include_context 'valid configuration file'
 
-      let(:configuration) { BookmeterScraper::Configuration.new(configuration_filename) }
+      let(:configuration) do
+        BookmeterScraper::Configuration.new(configuration_filename)
+      end
+
       subject { configuration.password }
       it { is_expected.to eq valid_password }
     end
@@ -44,10 +53,13 @@ RSpec.describe BookmeterScraper::Configuration do
     context 'taking invalid configuration file' do
       include_context 'invalid configuration file'
 
-      let(:configuration) { BookmeterScraper::Configuration.new(configuration_filename) }
-      subject { configuration.password }
+      let(:configuration) do
+        BookmeterScraper::Configuration.new(configuration_filename)
+      end
+
       it 'raises ConfigurationError' do
-        expect { BookmeterScraper::Configuration.new(configuration_filename) }.to raise_error BookmeterScraper::ConfigurationError
+        expect { BookmeterScraper::Configuration.new(configuration_filename) }
+          .to raise_error BookmeterScraper::ConfigurationError
       end
     end
   end
