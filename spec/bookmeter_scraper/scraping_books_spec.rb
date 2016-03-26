@@ -47,7 +47,7 @@ RSpec.describe BookmeterScraper::Scraper do
       end
     end
 
-    describe '#get_books for read books' do
+    describe '#fetch_books for read books' do
       context 'taking valid user ID and read books are found' do
         include_context 'valid user ID'
 
@@ -65,7 +65,7 @@ RSpec.describe BookmeterScraper::Scraper do
         end
 
         describe 'books' do
-          subject { scraper.get_books(user_id, :read_books_uri).to_a }
+          subject { scraper.fetch_books(user_id, :read_books_uri).to_a }
           it { is_expected.not_to be_empty }
           it { is_expected.to include \
             BookmeterScraper::Scraper::Book.new('Web API: The Good Parts',
@@ -103,7 +103,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_books(user_id, :read_books_uri) }
+        subject { scraper.fetch_books(user_id, :read_books_uri) }
         it { is_expected.to be_empty }
       end
 
@@ -114,7 +114,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_books(user_id, :read_books_uri) }
+        subject { scraper.fetch_books(user_id, :read_books_uri) }
         it { is_expected.to be_empty }
       end
 
@@ -122,12 +122,12 @@ RSpec.describe BookmeterScraper::Scraper do
         include_context 'invalid user ID'
 
         it 'raises ArgumentError' do
-          expect { scraper.get_books('a00000', :read_books_uri) }.to raise_error ArgumentError
+          expect { scraper.fetch_books('a00000', :read_books_uri) }.to raise_error ArgumentError
         end
       end
     end
 
-    describe '#get_books for reading_books' do
+    describe '#fetch_books for reading_books' do
       before do
         File.open('spec/fixtures/read_books.html') do |f|
           stub_request(:any, 'http://bookmeter.com/u/000000/booklistnow')
@@ -151,7 +151,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_books(user_id, :reading_books_uri).to_a }
+        subject { scraper.fetch_books(user_id, :reading_books_uri).to_a }
         it { is_expected.not_to be_empty }
         it { is_expected.to include \
             BookmeterScraper::Scraper::Book.new('Web API: The Good Parts',
@@ -188,7 +188,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_books(user_id, :reading_books_uri) }
+        subject { scraper.fetch_books(user_id, :reading_books_uri) }
         it { is_expected.to be_empty }
       end
 
@@ -199,7 +199,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_books(user_id, :reading_books_uri) }
+        subject { scraper.fetch_books(user_id, :reading_books_uri) }
         it { is_expected.to be_empty }
       end
 
@@ -207,12 +207,12 @@ RSpec.describe BookmeterScraper::Scraper do
         include_context 'invalid user ID'
 
         it 'raises ArgumentError' do
-          expect { scraper.get_books(user_id, :reading_books_uri) }.to raise_error ArgumentError
+          expect { scraper.fetch_books(user_id, :reading_books_uri) }.to raise_error ArgumentError
         end
       end
     end
 
-    describe '#tsundoku' do
+    describe '#fetch_books for tsundoku' do
       before do
         File.open('spec/fixtures/read_books.html') do |f|
           stub_request(:any, 'http://bookmeter.com/u/000000/booklisttun')
@@ -236,7 +236,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_books(user_id, :tsundoku_uri).to_a }
+        subject { scraper.fetch_books(user_id, :tsundoku_uri).to_a }
         it { is_expected.not_to be_empty }
         it { is_expected.to include \
             BookmeterScraper::Scraper::Book.new('Web API: The Good Parts',
@@ -273,7 +273,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_books(user_id, :tsundoku_uri) }
+        subject { scraper.fetch_books(user_id, :tsundoku_uri) }
         it { is_expected.to be_empty }
       end
 
@@ -284,7 +284,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_books(user_id, :tsundoku_uri) }
+        subject { scraper.fetch_books(user_id, :tsundoku_uri) }
         it { is_expected.to be_empty }
       end
 
@@ -292,12 +292,12 @@ RSpec.describe BookmeterScraper::Scraper do
         include_context 'invalid user ID'
 
         it 'raises ArgumentError' do
-          expect { scraper.get_books(user_id, :tsundoku_uri) }.to raise_error ArgumentError
+          expect { scraper.fetch_books(user_id, :tsundoku_uri) }.to raise_error ArgumentError
         end
       end
     end
 
-    describe '#wish_list' do
+    describe '#fetch_books for wish_list' do
       before do
         File.open('spec/fixtures/read_books.html') do |f|
           stub_request(:any, 'http://bookmeter.com/u/000000/booklistpre')
@@ -321,7 +321,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_books(user_id, :wish_list_uri).to_a }
+        subject { scraper.fetch_books(user_id, :wish_list_uri).to_a }
         it { is_expected.not_to be_empty }
         it { is_expected.to include \
             BookmeterScraper::Scraper::Book.new('Web API: The Good Parts',
@@ -358,7 +358,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_books(user_id, :wish_list_uri) }
+        subject { scraper.fetch_books(user_id, :wish_list_uri) }
         it { is_expected.to be_empty }
       end
 
@@ -369,7 +369,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_books(user_id, :wish_list_uri) }
+        subject { scraper.fetch_books(user_id, :wish_list_uri) }
         it { is_expected.to be_empty }
       end
 
@@ -377,7 +377,7 @@ RSpec.describe BookmeterScraper::Scraper do
         include_context 'invalid user ID'
 
         it 'raises ArgumentError' do
-          expect { scraper.get_books(user_id, :wish_list_uri) }.to raise_error ArgumentError
+          expect { scraper.fetch_books(user_id, :wish_list_uri) }.to raise_error ArgumentError
         end
       end
     end

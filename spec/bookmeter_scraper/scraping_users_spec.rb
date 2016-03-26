@@ -32,7 +32,7 @@ RSpec.describe BookmeterScraper::Scraper do
       end
     end
 
-    describe '#followings' do
+    describe '#fetch_followings' do
       before do
         File.open('spec/fixtures/followings.html') do |f|
           stub_request(:get, 'http://bookmeter.com/u/000000/favorite_user')
@@ -52,7 +52,7 @@ RSpec.describe BookmeterScraper::Scraper do
         end
 
         describe 'users' do
-          subject { scraper.get_followings(user_id) }
+          subject { scraper.fetch_followings(user_id) }
           it { is_expected.not_to be_empty }
           it { is_expected.to include \
             BookmeterScraper::Scraper::User.new('test_user_2', '000001', 'http://bookmeter.com/u/000001'),
@@ -71,7 +71,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_followings(user_id) }
+        subject { scraper.fetch_followings(user_id) }
         it { is_expected.to be_empty }
       end
 
@@ -79,12 +79,12 @@ RSpec.describe BookmeterScraper::Scraper do
         include_context 'invalid user ID'
 
         it 'raises ArgumentError' do
-          expect { scraper.get_followings(user_id) }.to raise_error ArgumentError
+          expect { scraper.fetch_followings(user_id) }.to raise_error ArgumentError
         end
       end
     end
 
-    describe '#followers' do
+    describe '#fetch_followers' do
       before do
         File.open('spec/fixtures/followers.html') do |f|
           stub_request(:get, 'http://bookmeter.com/u/000000/favorited_user')
@@ -104,7 +104,7 @@ RSpec.describe BookmeterScraper::Scraper do
         end
 
         describe 'users' do
-          subject { scraper.get_followers(user_id) }
+          subject { scraper.fetch_followers(user_id) }
           it { is_expected.not_to be_empty }
           it { is_expected.to include \
             BookmeterScraper::Scraper::User.new('test_user_2', '000001', 'http://bookmeter.com/u/000001'),
@@ -123,7 +123,7 @@ RSpec.describe BookmeterScraper::Scraper do
           scraper.agent = agent
         end
 
-        subject { scraper.get_followers(user_id) }
+        subject { scraper.fetch_followers(user_id) }
         it { is_expected.to be_empty }
       end
 
@@ -131,7 +131,7 @@ RSpec.describe BookmeterScraper::Scraper do
         include_context 'invalid user ID'
 
         it 'raises ArgumentError' do
-          expect { scraper.get_followers(user_id) }.to raise_error ArgumentError
+          expect { scraper.fetch_followers(user_id) }.to raise_error ArgumentError
         end
       end
     end

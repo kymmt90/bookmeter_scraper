@@ -53,7 +53,7 @@ module BookmeterScraper
     end
 
     def profile(user_id)
-      @scraper.profile(user_id)
+      @scraper.fetch_profile(user_id)
     end
 
     def read_books(user_id = @log_in_user_id)
@@ -62,7 +62,7 @@ module BookmeterScraper
 
     def read_books_in(year, month, user_id = @log_in_user_id)
       date = Time.local(year, month)
-      books = @scraper.get_read_books(user_id, date)
+      books = @scraper.fetch_read_books(user_id, date)
       books.each { |b| yield b } if block_given?
       books.to_a
     end
@@ -80,18 +80,18 @@ module BookmeterScraper
     end
 
     def followings(user_id = @log_in_user_id)
-      @scraper.get_followings(user_id)
+      @scraper.fetch_followings(user_id)
     end
 
     def followers(user_id = @log_in_user_id)
-      @scraper.get_followers(user_id)
+      @scraper.fetch_followers(user_id)
     end
 
 
     private
 
     def fetch_books(user_id, uri_method)
-      books = @scraper.get_books(user_id, uri_method)
+      books = @scraper.fetch_books(user_id, uri_method)
       books.each { |book| yield book } if block_given?
       books.to_a
     end

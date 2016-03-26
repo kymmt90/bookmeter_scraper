@@ -72,17 +72,40 @@ module BookmeterScraper
       @book_pages = {}
     end
 
-    def get_books(user_id, uri_method)
+    def fetch_profile(user_id, agent = @agent)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+      raise BookmeterError if agent.nil?
+
+      Profile.new(*scrape_profile(user_id, agent))
+    end
+
+    def scrape_profile(user_id, agent)
+      mypage = agent.get(BookmeterScraper.mypage_uri(user_id))
+
+      profile_dl_tags    = mypage.search('#side_left > div.inner > div.profile > dl')
+      jp_attribute_names = profile_dl_tags.map { |i| i.children[0].children.text }
+      attribute_values   = profile_dl_tags.map { |i| i.children[1].children.text }
+      jp_attributes      = Hash[jp_attribute_names.zip(attribute_values)]
+
+      attributes = PROFILE_ATTRIBUTES.map do |attribute|
+        jp_attributes[JP_ATTRIBUTE_NAMES[attribute]]
+      end
+      attributes[0] = mypage.at_css('#side_left > div.inner > h3').text
+
+      attributes
+    end
+
+    def fetch_books(user_id, uri_method)
       books = Books.new
-      scraped_pages = scrape_book_pages(user_id, uri_method)
+      scraped_pages = scrape_books_pages(user_id, uri_method)
       scraped_pages.each do |page|
-        books << get_book_structs(page)
+        books << extract_books(page)
         books.flatten!
       end
       books
     end
 
-    def scrape_book_pages(user_id, uri_method, agent = @agent)
+    def scrape_books_pages(user_id, uri_method, agent = @agent)
       raise ArgumentError unless user_id =~ USER_ID_REGEX
       raise ArgumentError unless BookmeterScraper.methods.include?(uri_method)
       raise BookmeterError if agent.nil?
@@ -113,20 +136,20 @@ module BookmeterScraper
       books_root.inject(agent, books_page)
     end
 
-    def get_book_structs(page)
+    def extract_books(page)
       books = []
 
       1.upto(NUM_BOOKS_PER_PAGE) do |i|
         break if page["book_#{i}_link"].empty?
 
         read_dates = []
-        read_date = get_read_date(page["book_#{i}_link"])
+        read_date = scrape_read_date(page["book_#{i}_link"])
         unless read_date.empty?
           read_dates << Time.local(read_date['year'], read_date['month'], read_date['day'])
         end
 
         reread_dates = []
-        reread_dates << get_reread_date(page["book_#{i}_link"])
+        reread_dates << scrape_reread_date(page["book_#{i}_link"])
         reread_dates.flatten!
 
         unless reread_dates.empty?
@@ -136,9 +159,9 @@ module BookmeterScraper
         end
 
         book_path = page["book_#{i}_link"]
-        book_name = get_book_name(book_path)
-        book_author = get_book_author(book_path)
-        book_image_uri = get_book_image_uri(book_path)
+        book_name = scrape_book_name(book_path)
+        book_author = scrape_book_author(book_path)
+        book_image_uri = scrape_book_image_uri(book_path)
         book = Book.new(book_name,
                         book_author,
                         read_dates,
@@ -150,54 +173,10 @@ module BookmeterScraper
       books
     end
 
-    def get_followings(user_id, agent = @agent)
-      raise ArgumentError unless user_id =~ USER_ID_REGEX
-      raise BookmeterError if agent.nil?
-      return [] unless agent.logged_in?
-
-      users = []
-      scraped_pages = user_id == agent.log_in_user_id ? scrape_followings_page(user_id)
-                                                      : scrape_others_followings_page(user_id)
-      scraped_pages.each do |page|
-        users << get_user_structs(page)
-        users.flatten!
-      end
-      users
-    end
-
-    def get_followers(user_id)
-      raise ArgumentError unless user_id =~ USER_ID_REGEX
-      raise BookmeterError if agent.nil?
-      return [] unless agent.logged_in?
-
-      users = []
-      scraped_pages = scrape_followers_page(user_id)
-      scraped_pages.each do |page|
-        users << get_user_structs(page)
-        users.flatten!
-      end
-      users
-    end
-
-    def get_user_structs(page)
-      users = []
-
-      1.upto(NUM_USERS_PER_PAGE) do |i|
-        break if page["user_#{i}_name"].empty?
-
-        user_name = page["user_#{i}_name"]
-        user_id = page["user_#{i}_link"].match(/\/u\/(\d+)$/)[1]
-        user = User.new(user_name, user_id, ROOT_URI + "/u/#{user_id}")
-        users << user
-      end
-
-      users
-    end
-
-    def get_read_books(user_id, target_ym)
+    def fetch_read_books(user_id, target_ym)
       result = Books.new
-      scrape_book_pages(user_id, :read_books_uri).each do |page|
-        first_book_date = get_read_date(page['book_1_link'])
+      scrape_books_pages(user_id, :read_books_uri).each do |page|
+        first_book_date = scrape_read_date(page['book_1_link'])
         last_book_date  = get_last_book_date(page)
 
         first_book_ym = Time.local(first_book_date['year'].to_i, first_book_date['month'].to_i)
@@ -206,13 +185,13 @@ module BookmeterScraper
         if target_ym < last_book_ym
           next
         elsif target_ym == first_book_ym && target_ym > last_book_ym
-          result.concat(get_target_books(target_ym, page))
+          result.concat(fetch_target_books(target_ym, page))
           break
         elsif target_ym < first_book_ym && target_ym > last_book_ym
-          result.concat(get_target_books(target_ym, page))
+          result.concat(fetch_target_books(target_ym, page))
           break
         elsif target_ym <= first_book_ym && target_ym >= last_book_ym
-          result.concat(get_target_books(target_ym, page))
+          result.concat(fetch_target_books(target_ym, page))
         elsif target_ym > first_book_ym
           break
         end
@@ -224,23 +203,23 @@ module BookmeterScraper
       NUM_BOOKS_PER_PAGE.downto(1) do |i|
         link = page["book_#{i}_link"]
         next if link.empty?
-        return get_read_date(link)
+        return scrape_read_date(link)
       end
     end
 
-    def get_target_books(target_ym, page)
+    def fetch_target_books(target_ym, page)
       target_books = Books.new
 
       1.upto(NUM_BOOKS_PER_PAGE) do |i|
         next if page["book_#{i}_link"].empty?
 
         read_yms = []
-        read_date = get_read_date(page["book_#{i}_link"])
+        read_date = scrape_read_date(page["book_#{i}_link"])
         read_dates = [Time.local(read_date['year'], read_date['month'], read_date['day'])]
         read_yms << Time.local(read_date['year'], read_date['month'])
 
         reread_dates = []
-        reread_dates << get_reread_date(page["book_#{i}_link"])
+        reread_dates << scrape_reread_date(page["book_#{i}_link"])
         reread_dates.flatten!
 
         unless reread_dates.empty?
@@ -257,9 +236,9 @@ module BookmeterScraper
           end
         end
         book_path = page["book_#{i}_link"]
-        book_name = get_book_name(book_path)
-        book_author = get_book_author(book_path)
-        book_image_uri = get_book_image_uri(book_path)
+        book_name = scrape_book_name(book_path)
+        book_author = scrape_book_author(book_path)
+        book_image_uri = scrape_book_image_uri(book_path)
         book = Book.new(book_name, book_author, read_dates, ROOT_URI + book_path, book_image_uri)
         target_books << book
       end
@@ -267,43 +246,24 @@ module BookmeterScraper
       target_books
     end
 
-
-    def profile(user_id, agent = @agent)
-      raise ArgumentError unless user_id =~ USER_ID_REGEX
-      raise BookmeterError if agent.nil?
-
-      mypage = agent.get(BookmeterScraper.mypage_uri(user_id))
-
-      profile_dl_tags = mypage.search('#side_left > div.inner > div.profile > dl')
-      jp_attribute_names = profile_dl_tags.map { |i| i.children[0].children.text }
-      attribute_values   = profile_dl_tags.map { |i| i.children[1].children.text }
-      jp_attributes = Hash[jp_attribute_names.zip(attribute_values)]
-      attributes = PROFILE_ATTRIBUTES.map do |attribute|
-        jp_attributes[JP_ATTRIBUTE_NAMES[attribute]]
-      end
-      attributes[0] = mypage.at_css('#side_left > div.inner > h3').text
-
-      Profile.new(*attributes)
-    end
-
     def get_book_page(book_uri, agent = @agent)
       @book_pages[book_uri] = agent.get(ROOT_URI + book_uri) unless @book_pages[book_uri]
       @book_pages[book_uri]
     end
 
-    def get_book_name(book_uri)
+    def scrape_book_name(book_uri)
       get_book_page(book_uri).search('#title').text
     end
 
-    def get_book_author(book_uri)
+    def scrape_book_author(book_uri)
       get_book_page(book_uri).search('#author_name').text
     end
 
-    def get_book_image_uri(book_uri)
+    def scrape_book_image_uri(book_uri)
       get_book_page(book_uri).search('//*[@id="book_image"]/@src').text
     end
 
-    def get_read_date(book_uri, agent = @agent)
+    def scrape_read_date(book_uri, agent = @agent)
       book_date = Yasuri.struct_date '//*[@id="book_edit_area"]/form[1]/div[2]' do
         text_year  '//*[@id="read_date_y"]/option[1]', truncate: /\d+/, proc: :to_i
         text_month '//*[@id="read_date_m"]/option[1]', truncate: /\d+/, proc: :to_i
@@ -312,13 +272,42 @@ module BookmeterScraper
       book_date.inject(agent, get_book_page(book_uri))
     end
 
-    def get_reread_date(book_uri, agent = @agent)
+    def scrape_reread_date(book_uri, agent = @agent)
       book_reread_date = Yasuri.struct_reread_date '//*[@id="book_edit_area"]/div/form[1]/div[2]' do
         text_reread_year  '//div[@class="reread_box"]/form[1]/div[2]/select[1]/option[1]', truncate: /\d+/, proc: :to_i
         text_reread_month '//div[@class="reread_box"]/form[1]/div[2]/select[2]/option[1]', truncate: /\d+/, proc: :to_i
         text_reread_day   '//div[@class="reread_box"]/form[1]/div[2]/select[3]/option[1]', truncate: /\d+/, proc: :to_i
       end
       book_reread_date.inject(agent, get_book_page(book_uri))
+    end
+
+    def fetch_followings(user_id)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+      raise BookmeterError if agent.nil?
+      return [] unless agent.logged_in?
+
+      users = []
+      scraped_pages = user_id == agent.log_in_user_id ? scrape_followings_page(user_id)
+                                                      : scrape_others_followings_page(user_id)
+      scraped_pages.each do |page|
+        users << extract_users(page)
+        users.flatten!
+      end
+      users
+    end
+
+    def fetch_followers(user_id, agent = @agent)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+      raise BookmeterError if agent.nil?
+      return [] unless agent.logged_in?
+
+      users = []
+      scraped_pages = scrape_followers_page(user_id)
+      scraped_pages.each do |page|
+        users << extract_users(page)
+        users.flatten!
+      end
+      users
     end
 
     def scrape_followings_page(user_id, agent = @agent)
@@ -333,6 +322,14 @@ module BookmeterScraper
         end
       end
       [followings_root.inject(agent, followings_page)]
+    end
+
+    def scrape_others_followings_page(user_id)
+      scrape_users_listing_page(user_id, :followings_uri)
+    end
+
+    def scrape_followers_page(user_id)
+      scrape_users_listing_page(user_id, :followers_uri)
     end
 
     def scrape_users_listing_page(user_id, uri_method, agent = @agent)
@@ -350,12 +347,19 @@ module BookmeterScraper
       [root.inject(agent, page)]
     end
 
-    def scrape_others_followings_page(user_id)
-      scrape_users_listing_page(user_id, :followings_uri)
-    end
+    def extract_users(page)
+      users = []
 
-    def scrape_followers_page(user_id)
-      scrape_users_listing_page(user_id, :followers_uri)
+      1.upto(NUM_USERS_PER_PAGE) do |i|
+        break if page["user_#{i}_name"].empty?
+
+        user_name = page["user_#{i}_name"]
+        user_id = page["user_#{i}_link"].match(/\/u\/(\d+)$/)[1]
+        user = User.new(user_name, user_id, ROOT_URI + "/u/#{user_id}")
+        users << user
+      end
+
+      users
     end
   end
 end

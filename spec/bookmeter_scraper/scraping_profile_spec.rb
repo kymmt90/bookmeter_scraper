@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe BookmeterScraper::Scraper do
-  describe '#profile' do
+  describe '#fetch_profile' do
     let!(:agent) { BookmeterScraper::Agent.new }
     let(:scraper) { BookmeterScraper::Scraper.new(agent) }
-    let(:profile) { scraper.profile('000000') }
+    let(:profile) { scraper.fetch_profile('000000') }
 
     context 'from complete profile' do
       before do
