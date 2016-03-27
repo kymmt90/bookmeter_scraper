@@ -1,5 +1,3 @@
-require 'yaml'
-
 module BookmeterScraper
   class Configuration
     attr_accessor :mail, :password
@@ -10,13 +8,21 @@ module BookmeterScraper
         return
       end
 
-      config = YAML.load_file(config_file)
+      config = load_yaml_file(config_file)
       unless config.has_key?('mail') && config.has_key?('password')
         raise ConfigurationError, "#{config_file}: Invalid configuration file"
       end
 
       @mail     = config['mail']
       @password = config['password']
+    end
+
+
+    private
+
+    def load_yaml_file(config_file)
+      require 'yaml'
+      YAML.load_file(config_file)
     end
   end
 

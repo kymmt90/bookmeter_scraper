@@ -1,5 +1,5 @@
-require 'forwardable'
-require 'yasuri'
+require 'bookmeter_scraper/agent'
+require 'bookmeter_scraper/scraper'
 
 module BookmeterScraper
   class Bookmeter

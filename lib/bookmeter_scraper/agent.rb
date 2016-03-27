@@ -1,4 +1,4 @@
-require 'bookmeter_scraper/bookmeter'
+require 'forwardable'
 
 module BookmeterScraper
   class Agent
