@@ -1,4 +1,5 @@
 require 'forwardable'
+require 'mechanize'
 require 'yasuri'
 
 module BookmeterScraper
@@ -131,7 +132,7 @@ module BookmeterScraper
         books_root = Yasuri.struct_books '//*[@id="main_left"]/div' do
           1.upto(NUM_BOOKS_PER_PAGE) do |i|
             send("text_book_#{i}_name", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a")
-            send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/href")
+            send("text_book_#{i}_link", "//*[@id=\"main_left\"]/div/div[#{i + 1}]/div[2]/a/@href")
           end
         end
         return [books_root.inject(agent, books_page)]
