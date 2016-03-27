@@ -1,4 +1,4 @@
-# Bookmeter Scraper [![Build Status](https://travis-ci.org/kymmt90/bookmeter_scraper.svg?branch=master)](https://travis-ci.org/kymmt90/bookmeter_scraper)
+# Bookmeter Scraper [![Build Status](https://travis-ci.org/kymmt90/bookmeter_scraper.svg?branch=master)](https://travis-ci.org/kymmt90/bookmeter_scraper) [![Gem Version](https://badge.fury.io/rb/bookmeter_scraper.svg)](https://badge.fury.io/rb/bookmeter_scraper)
 
 A library for scraping [Bookmeter](http://bookmeter.com).
 
@@ -34,10 +34,11 @@ require 'bookmeter_scraper'
 
 You need to log in Bookmeter to get books and followings / followers information by `Bookmeter.log_in` or `Bookmeter#log_in`.
 
-There are 2 ways to input authentication information:
+There are 3 ways to input authentication information:
 
 1. Passing as arguments
 2. Writing out to `config.yml`
+3. Configuring in a block
 
 #### 1. Passing as arguments
 
@@ -71,6 +72,27 @@ bookmeter = BookmeterScraper::Bookmeter.log_in
 bookmeter.logged_in?    # true
 ```
 
+#### 3. Configuring in a block
+
+You can configure mail address and password in a block.
+
+```ruby
+bookmeter = BookmeterScraper::Bookmeter.log_in do |configuration|
+  configuration.mail = 'example@example.com'
+  configuration.password = 'password'
+end
+bookmeter.logged_in?    # true
+```
+
+`Bookmeter#log_in` is also available:
+
+```ruby
+bookmeter = BookmeterScraper::Bookmeter.new
+bookmeter.log_in do |configuration|
+  configuration.mail = 'example@example.com'
+  configuration.password = 'password'
+end
+```
 
 ### Get books information
 
@@ -92,12 +114,20 @@ books = bookmeter.read_books        # get read books of the logged in user
 bookmeter.read_books('01010101')    # get read books of a user specified by ID
 ```
 
-Books infomation is an array of `Struct` which has `name` and `read_dates` as attributes.
+Books infomation is an array of `Book` which has these attributes:
+
+- `name`
+- `read_dates`
+- `uri`
+- `image_uri`
+
 `read_dates` is an array of finished reading dates (first finished date and reread dates):
 
 ```ruby
 books[0].name
 books[0].read_dates
+books[0].uri
+books[0].image_uri
 ```
 
 To specify year-month for read books, you can use `Bookmeter#read_books_in`:
@@ -135,13 +165,19 @@ followers = bookmeter.followers
 
 You need to log in Bookmeter in advance to get these information.
 
-Users information is an array of `Struct` which has `name` and `id` as attributes.
+Users information is an array of `Struct` which has following attributes:
+
+- `name`
+- `id`
+- `uri`
 
 ```ruby
 following_users[0].name
 following_users[0].id
+following_users[0].uri
 followers[0].name
 followers[0].id
+followers[0].uri
 ```
 
 #### Notice
