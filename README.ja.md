@@ -1,4 +1,5 @@
-# Bookmeter Scraper [![Build Status](https://travis-ci.org/kymmt90/bookmeter_scraper.svg?branch=master)](https://travis-ci.org/kymmt90/bookmeter_scraper)
+# Bookmeter Scraper [![Build Status](https://travis-ci.org/kymmt90/bookmeter_scraper.svg?branch=master)](https://travis-ci.org/kymmt90/bookmeter_scraper) [![Gem Version](https://badge.fury.io/rb/bookmeter_scraper.svg)](https://badge.fury.io/rb/bookmeter_scraper)
+
 
 [読書メーター](http://bookmeter.com)の情報をスクレイピングして Ruby で扱えるようにするための gem です。
 
@@ -30,10 +31,11 @@ require 'bookmeter_scraper'
 
 書籍情報、お気に入り / お気に入られユーザ情報を取得するには、`Bookmeter.log_in` または `Bookmeter#log_in` でログインしておく必要があります。
 
-ログイン情報の入力には以下の 2 通りの方法があります。
+ログイン情報の入力には以下の 3 通りの方法があります。
 
 1. 引数として渡す
 2. `config.yml` へ記述しておく
+3. ブロック内で設定する
 
 #### 1. 引数として渡す
 
@@ -67,6 +69,28 @@ bookmeter = BookmeterScraper::Bookmeter.log_in
 bookmeter.logged_in?    # true
 ```
 
+#### 3. ブロック内で設定する
+
+以下のように `Bookmeter.log_in` へブロックを渡すことで、ログインできます。
+
+```ruby
+bookmeter = BookmeterScraper::Bookmeter.log_in do |configuration|
+  configuration.mail     = 'example@example.com'
+  configuration.password = 'password'
+end
+bookmeter.logged_in?    # true
+```
+
+`Bookmeter#log_in` でもログイン可能です。
+
+```ruby
+bookmeter = BookmeterScraper::Bookmeter.new
+bookmeter.log_in do |configuration|
+  configuration.mail     = 'example@example.com'
+  configuration.password = 'password'
+end
+```
+
 ### 書籍情報の取得
 
 以下の書籍情報
@@ -76,7 +100,7 @@ bookmeter.logged_in?    # true
 - 積読本
 - 読みたい本
 
-を取得できます。取得には事前のログインが必要です。
+を取得できます。取得には `Bookmeter.log_in` などによる事前のログインが必要です。
 
 #### 読んだ本
 
@@ -92,13 +116,17 @@ bookmeter.read_books('01010101')    # 他のユーザの ID を指定して、�
 - 書名 `name`
 - 著者 `author`
 - 読了日（初読了日と再読日の両方）の配列 `read_dates`
+- 読書メーター内の書籍ページの URI `uri`
+- 書籍の表紙画像 URI `image_uri`
 
-を属性として持つ `Struct` の配列として取得できます。
+を属性として持つ `Book` の配列として取得できます。
 
 ```ruby
 books[0].name
 books[0].author
 books[0].read_dates
+books[0].uri
+books[0].image_uri
 ```
 
 さらに、`Bookmeter#read_books_in` で特定年月の「読んだ本」情報が取得できます。
@@ -129,6 +157,8 @@ books = bookmeter.reading_books    # ログインユーザの「読んでる本�
 books[0].name
 books[0].author
 books[0].read_dates    # 読了日の Array は空
+books[0].uri
+books[0].image_uri
 
 bookmeter.tsundoku     # ログインユーザの「積読本」を取得
 bookmeter.wish_list    # ログインユーザの「読みたい本」を取得
@@ -143,13 +173,20 @@ following_users = bookmeter.followings    # 「お気に入り」ユーザの情
 followers = bookmeter.followers           # 「お気に入られ」ユーザの情報を取得
 ```
 
-ユーザ情報はユーザ名 `name` とユーザ ID `id` を持つ `Struct` の配列として取得できます。
+ユーザ情報は
+
+- ユーザ名 `name`
+- ユーザ ID `id`
+- 読書メーター内のユーザページの URI `uri`
+
+を持つ `User` の配列として取得できます。
 
 ```ruby
 following_users[0].name
 following_users[0].id
 followers[0].name
 followers[0].id
+followers[0].uri
 ```
 
 #### 注意
