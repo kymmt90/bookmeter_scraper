@@ -2,20 +2,22 @@ require 'bookmeter_scraper/bookmeter'
 
 module BookmeterScraper
   class Scraper
-    PROFILE_ATTRIBUTES = %i(name
-                            gender
-                            age
-                            blood_type
-                            job
-                            address
-                            url
-                            description
-                            first_day
-                            elapsed_days
-                            read_books_count
-                            read_pages_count
-                            reviews_count
-                            bookshelfs_count)
+    PROFILE_ATTRIBUTES = %i(
+      name
+      gender
+      age
+      blood_type
+      job
+      address
+      url
+      description
+      first_day
+      elapsed_days
+      read_books_count
+      read_pages_count
+      reviews_count
+      bookshelfs_count
+    )
     Profile = Struct.new(*PROFILE_ATTRIBUTES)
 
     JP_ATTRIBUTE_NAMES = {
@@ -152,7 +154,7 @@ module BookmeterScraper
         break if page["book_#{i}_link"].empty?
 
         read_dates = []
-        read_date = scrape_read_date(page["book_#{i}_link"])
+        read_date  = scrape_read_date(page["book_#{i}_link"])
         unless read_date.empty?
           read_dates << Time.local(read_date['year'], read_date['month'], read_date['day'])
         end
@@ -169,7 +171,7 @@ module BookmeterScraper
 
         book_path = page["book_#{i}_link"]
         book_name = scrape_book_name(book_path)
-        book_author = scrape_book_author(book_path)
+        book_author    = scrape_book_author(book_path)
         book_image_uri = scrape_book_image_uri(book_path)
         book = Book.new(book_name,
                         book_author,
@@ -182,29 +184,29 @@ module BookmeterScraper
       books
     end
 
-    def fetch_read_books(user_id, target_ym)
+    def fetch_read_books(user_id, target_year_month)
       raise ArgumentError unless user_id =~ USER_ID_REGEX
-      raise ArgumentError if target_ym.nil?
+      raise ArgumentError if target_year_month.nil?
 
       result = Books.new
       scrape_books_pages(user_id, :read_books_uri).each do |page|
         first_book_date = scrape_read_date(page['book_1_link'])
         last_book_date  = get_last_book_date(page)
 
-        first_book_ym = Time.local(first_book_date['year'].to_i, first_book_date['month'].to_i)
-        last_book_ym  = Time.local(last_book_date['year'].to_i, last_book_date['month'].to_i)
+        first_book_year_month = Time.local(first_book_date['year'].to_i, first_book_date['month'].to_i)
+        last_book_year_month  = Time.local(last_book_date['year'].to_i, last_book_date['month'].to_i)
 
-        if target_ym < last_book_ym
+        if target_year_month < last_book_year_month
           next
-        elsif target_ym == first_book_ym && target_ym > last_book_ym
-          result.concat(fetch_target_books(target_ym, page))
+        elsif target_year_month == first_book_year_month && target_year_month > last_book_year_month
+          result.concat(fetch_target_books(target_year_month, page))
           break
-        elsif target_ym < first_book_ym && target_ym > last_book_ym
-          result.concat(fetch_target_books(target_ym, page))
+        elsif target_year_month < first_book_year_month && target_year_month > last_book_year_month
+          result.concat(fetch_target_books(target_year_month, page))
           break
-        elsif target_ym <= first_book_ym && target_ym >= last_book_ym
-          result.concat(fetch_target_books(target_ym, page))
-        elsif target_ym > first_book_ym
+        elsif target_year_month <= first_book_year_month && target_year_month >= last_book_year_month
+          result.concat(fetch_target_books(target_year_month, page))
+        elsif target_year_month > first_book_year_month
           break
         end
       end
@@ -221,18 +223,18 @@ module BookmeterScraper
       end
     end
 
-    def fetch_target_books(target_ym, page)
-      raise ArgumentError if target_ym.nil?
+    def fetch_target_books(target_year_month, page)
+      raise ArgumentError if target_year_month.nil?
       raise ArgumentError if page.nil?
 
       target_books = Books.new
       1.upto(NUM_BOOKS_PER_PAGE) do |i|
         next if page["book_#{i}_link"].empty?
 
-        read_yms = []
-        read_date = scrape_read_date(page["book_#{i}_link"])
+        read_year_months = []
+        read_date  = scrape_read_date(page["book_#{i}_link"])
         read_dates = [Time.local(read_date['year'], read_date['month'], read_date['day'])]
-        read_yms << Time.local(read_date['year'], read_date['month'])
+        read_year_months << Time.local(read_date['year'], read_date['month'])
 
         reread_dates = []
         reread_dates << scrape_reread_date(page["book_#{i}_link"])
@@ -240,11 +242,11 @@ module BookmeterScraper
 
         unless reread_dates.empty?
           reread_dates.each do |date|
-            read_yms << Time.local(date['reread_year'], date['reread_month'])
+            read_year_months << Time.local(date['reread_year'], date['reread_month'])
           end
         end
 
-        next unless read_yms.include?(target_ym)
+        next unless read_year_months.include?(target_year_month)
 
         unless reread_dates.empty?
           reread_dates.each do |date|
@@ -253,10 +255,9 @@ module BookmeterScraper
         end
         book_path = page["book_#{i}_link"]
         book_name = scrape_book_name(book_path)
-        book_author = scrape_book_author(book_path)
+        book_author    = scrape_book_author(book_path)
         book_image_uri = scrape_book_image_uri(book_path)
-        book = Book.new(book_name, book_author, read_dates, ROOT_URI + book_path, book_image_uri)
-        target_books << book
+        target_books << Book.new(book_name, book_author, read_dates, ROOT_URI + book_path, book_image_uri)
       end
 
       target_books
@@ -342,13 +343,11 @@ module BookmeterScraper
 
     def scrape_others_followings_page(user_id)
       raise ArgumentError unless user_id =~ USER_ID_REGEX
-
       scrape_users_listing_page(user_id, :followings_uri)
     end
 
     def scrape_followers_page(user_id)
       raise ArgumentError unless user_id =~ USER_ID_REGEX
-
       scrape_users_listing_page(user_id, :followers_uri)
     end
 
@@ -375,9 +374,8 @@ module BookmeterScraper
         break if page["user_#{i}_name"].empty?
 
         user_name = page["user_#{i}_name"]
-        user_id = page["user_#{i}_link"].match(/\/u\/(\d+)$/)[1]
-        user = User.new(user_name, user_id, ROOT_URI + "/u/#{user_id}")
-        users << user
+        user_id   = page["user_#{i}_link"].match(/\/u\/(\d+)$/)[1]
+        users << User.new(user_name, user_id, ROOT_URI + "/u/#{user_id}")
       end
 
       users
