@@ -53,14 +53,18 @@ module BookmeterScraper
     end
 
     def profile(user_id)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
       @scraper.fetch_profile(user_id)
     end
 
     def read_books(user_id = @log_in_user_id)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
       fetch_books(user_id, :read_books_uri)
     end
 
     def read_books_in(year, month, user_id = @log_in_user_id)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+
       date = Time.local(year, month)
       books = @scraper.fetch_read_books(user_id, date)
       books.each { |b| yield b } if block_given?
@@ -68,22 +72,27 @@ module BookmeterScraper
     end
 
     def reading_books(user_id = @log_in_user_id)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
       fetch_books(user_id, :reading_books_uri)
     end
 
     def tsundoku(user_id = @log_in_user_id)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
       fetch_books(user_id, :tsundoku_uri)
     end
 
     def wish_list(user_id = @log_in_user_id)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
       fetch_books(user_id, :wish_list_uri)
     end
 
     def followings(user_id = @log_in_user_id)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
       @scraper.fetch_followings(user_id)
     end
 
     def followers(user_id = @log_in_user_id)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
       @scraper.fetch_followers(user_id)
     end
 
@@ -91,6 +100,9 @@ module BookmeterScraper
     private
 
     def fetch_books(user_id, uri_method)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+      raise ArgumentError unless BookmeterScraper.methods.include?(uri_method)
+
       books = @scraper.fetch_books(user_id, uri_method)
       books.each { |book| yield book } if block_given?
       books.to_a

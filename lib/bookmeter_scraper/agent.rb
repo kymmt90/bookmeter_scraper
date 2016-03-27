@@ -19,6 +19,8 @@ module BookmeterScraper
     end
 
     def log_in(config)
+      raise ArgumentError if config.nil?
+
       page_after_submitting_form = nil
       @agent.get(BookmeterScraper::LOGIN_URI) do |page|
         page_after_submitting_form = page.form_with(action: '/login') do |form|
@@ -43,10 +45,14 @@ module BookmeterScraper
     private
 
     def page_after_logging_in?(page)
+      raise ArgumentError if page.nil?
+
       page.uri.to_s == BookmeterScraper::ROOT_URI + '/'
     end
 
     def extract_user_id(page)
+      raise ArgumentError if page.nil?
+
       page.uri.to_s.match(/\/u\/(\d+)$/)[1]
     end
   end

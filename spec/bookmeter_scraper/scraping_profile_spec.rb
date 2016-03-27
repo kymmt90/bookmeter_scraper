@@ -103,5 +103,18 @@ RSpec.describe BookmeterScraper::Scraper do
         it { is_expected.to eq '私は test-user です。' }
       end
     end
+
+    context 'taking invalid arguments' do
+      let!(:agent) { BookmeterScraper::Agent.new }
+      let(:scraper) { BookmeterScraper::Scraper.new(agent) }
+
+      it 'raises ArgumentError' do
+        expect { scraper.fetch_profile('a00000') }.to raise_error ArgumentError
+      end
+
+      it 'raises ScraperError' do
+        expect { scraper.fetch_profile('000000', nil) }.to raise_error BookmeterScraper::ScraperError
+      end
+    end
   end
 end

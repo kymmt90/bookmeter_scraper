@@ -353,4 +353,59 @@ RSpec.describe BookmeterScraper::Bookmeter do
       end
     end
   end
+
+  describe '#profile' do
+    let(:bookmeter) { BookmeterScraper::Bookmeter.new }
+
+    context 'taking invalid user ID' do
+      include_context 'invalid user ID'
+      it 'raises ArgumentError' do
+        expect { bookmeter.profile(user_id) }.to raise_error ArgumentError
+      end
+    end
+  end
+
+  describe '#read_books' do
+    let(:bookmeter) { BookmeterScraper::Bookmeter.new }
+
+    context 'taking invalid user ID' do
+      include_context 'invalid user ID'
+      it 'raises ArgumentError' do
+        expect { bookmeter.read_books(user_id) }.to raise_error ArgumentError
+      end
+    end
+  end
+
+  describe '#reading_books' do
+    let(:bookmeter) { BookmeterScraper::Bookmeter.new }
+
+    context 'taking invalid user ID' do
+      include_context 'invalid user ID'
+      it 'raises ArgumentError' do
+        expect { bookmeter.reading_books(user_id) }.to raise_error ArgumentError
+      end
+    end
+  end
+
+  describe '#tsundoku' do
+    let(:bookmeter) { BookmeterScraper::Bookmeter.new }
+
+    context 'taking invalid user ID' do
+      include_context 'invalid user ID'
+      it 'raises ArgumentError' do
+        expect { bookmeter.tsundoku(user_id) }.to raise_error ArgumentError
+      end
+    end
+  end
+
+  describe '#wish_list' do
+    let(:bookmeter) { BookmeterScraper::Bookmeter.new }
+
+    context 'taking invalid user ID' do
+      include_context 'invalid user ID'
+      it 'raises ArgumentError' do
+        expect { bookmeter.wish_list(user_id) }.to raise_error ArgumentError
+      end
+    end
+  end
 end

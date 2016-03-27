@@ -75,11 +75,15 @@ RSpec.describe BookmeterScraper::Scraper do
         it { is_expected.to be_empty }
       end
 
-      context 'taking invalid user ID' do
+      context 'taking invalid arguments' do
         include_context 'invalid user ID'
 
         it 'raises ArgumentError' do
           expect { scraper.fetch_followings(user_id) }.to raise_error ArgumentError
+        end
+
+        it 'raises ScraperError' do
+          expect { scraper.fetch_followings('000000', nil) }.to raise_error BookmeterScraper::ScraperError
         end
       end
     end
@@ -127,11 +131,15 @@ RSpec.describe BookmeterScraper::Scraper do
         it { is_expected.to be_empty }
       end
 
-      context 'taking invalid user ID' do
+      context 'taking invalid arguments' do
         include_context 'invalid user ID'
 
         it 'raises ArgumentError' do
           expect { scraper.fetch_followers(user_id) }.to raise_error ArgumentError
+        end
+
+        it 'raises ScraperError' do
+          expect { scraper.fetch_followings('000000', nil) }.to raise_error BookmeterScraper::ScraperError
         end
       end
     end

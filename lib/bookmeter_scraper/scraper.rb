@@ -74,12 +74,15 @@ module BookmeterScraper
 
     def fetch_profile(user_id, agent = @agent)
       raise ArgumentError unless user_id =~ USER_ID_REGEX
-      raise BookmeterError if agent.nil?
+      raise ScraperError if agent.nil?
 
       Profile.new(*scrape_profile(user_id, agent))
     end
 
     def scrape_profile(user_id, agent)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+      raise ScraperError if agent.nil?
+
       mypage = agent.get(BookmeterScraper.mypage_uri(user_id))
 
       profile_dl_tags    = mypage.search('#side_left > div.inner > div.profile > dl')
@@ -95,7 +98,12 @@ module BookmeterScraper
       attributes
     end
 
-    def fetch_books(user_id, uri_method)
+    def fetch_books(user_id, uri_method, agent = @agent)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+      raise ArgumentError unless BookmeterScraper.methods.include?(uri_method)
+      raise ScraperError if agent.nil?
+      return [] unless agent.logged_in?
+
       books = Books.new
       scraped_pages = scrape_books_pages(user_id, uri_method)
       scraped_pages.each do |page|
@@ -108,7 +116,7 @@ module BookmeterScraper
     def scrape_books_pages(user_id, uri_method, agent = @agent)
       raise ArgumentError unless user_id =~ USER_ID_REGEX
       raise ArgumentError unless BookmeterScraper.methods.include?(uri_method)
-      raise BookmeterError if agent.nil?
+      raise ScraperError if agent.nil?
       return [] unless agent.logged_in?
 
       books_page = agent.get(BookmeterScraper.method(uri_method).call(user_id))
@@ -137,8 +145,9 @@ module BookmeterScraper
     end
 
     def extract_books(page)
-      books = []
+      raise ArgumentError if page.nil?
 
+      books = []
       1.upto(NUM_BOOKS_PER_PAGE) do |i|
         break if page["book_#{i}_link"].empty?
 
@@ -174,6 +183,9 @@ module BookmeterScraper
     end
 
     def fetch_read_books(user_id, target_ym)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+      raise ArgumentError if target_ym.nil?
+
       result = Books.new
       scrape_books_pages(user_id, :read_books_uri).each do |page|
         first_book_date = scrape_read_date(page['book_1_link'])
@@ -200,6 +212,8 @@ module BookmeterScraper
     end
 
     def get_last_book_date(page)
+      raise ArgumentError if page.nil?
+
       NUM_BOOKS_PER_PAGE.downto(1) do |i|
         link = page["book_#{i}_link"]
         next if link.empty?
@@ -208,8 +222,10 @@ module BookmeterScraper
     end
 
     def fetch_target_books(target_ym, page)
-      target_books = Books.new
+      raise ArgumentError if target_ym.nil?
+      raise ArgumentError if page.nil?
 
+      target_books = Books.new
       1.upto(NUM_BOOKS_PER_PAGE) do |i|
         next if page["book_#{i}_link"].empty?
 
@@ -281,9 +297,9 @@ module BookmeterScraper
       book_reread_date.inject(agent, get_book_page(book_uri))
     end
 
-    def fetch_followings(user_id)
+    def fetch_followings(user_id, agent = @agent)
       raise ArgumentError unless user_id =~ USER_ID_REGEX
-      raise BookmeterError if agent.nil?
+      raise ScraperError if agent.nil?
       return [] unless agent.logged_in?
 
       users = []
@@ -298,7 +314,7 @@ module BookmeterScraper
 
     def fetch_followers(user_id, agent = @agent)
       raise ArgumentError unless user_id =~ USER_ID_REGEX
-      raise BookmeterError if agent.nil?
+      raise ScraperError if agent.nil?
       return [] unless agent.logged_in?
 
       users = []
@@ -325,10 +341,14 @@ module BookmeterScraper
     end
 
     def scrape_others_followings_page(user_id)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+
       scrape_users_listing_page(user_id, :followings_uri)
     end
 
     def scrape_followers_page(user_id)
+      raise ArgumentError unless user_id =~ USER_ID_REGEX
+
       scrape_users_listing_page(user_id, :followers_uri)
     end
 
@@ -348,8 +368,9 @@ module BookmeterScraper
     end
 
     def extract_users(page)
-      users = []
+      raise ArgumentError if page.nil?
 
+      users = []
       1.upto(NUM_USERS_PER_PAGE) do |i|
         break if page["user_#{i}_name"].empty?
 
@@ -362,4 +383,6 @@ module BookmeterScraper
       users
     end
   end
+
+  class ScraperError < StandardError; end
 end

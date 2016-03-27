@@ -117,14 +117,6 @@ RSpec.describe BookmeterScraper::Scraper do
         subject { scraper.fetch_books(user_id, :read_books_uri) }
         it { is_expected.to be_empty }
       end
-
-      context 'taking invalid user ID' do
-        include_context 'invalid user ID'
-
-        it 'raises ArgumentError' do
-          expect { scraper.fetch_books('a00000', :read_books_uri) }.to raise_error ArgumentError
-        end
-      end
     end
 
     describe '#fetch_books for reading_books' do
@@ -201,14 +193,6 @@ RSpec.describe BookmeterScraper::Scraper do
 
         subject { scraper.fetch_books(user_id, :reading_books_uri) }
         it { is_expected.to be_empty }
-      end
-
-      context 'taking invalid user ID' do
-        include_context 'invalid user ID'
-
-        it 'raises ArgumentError' do
-          expect { scraper.fetch_books(user_id, :reading_books_uri) }.to raise_error ArgumentError
-        end
       end
     end
 
@@ -287,14 +271,6 @@ RSpec.describe BookmeterScraper::Scraper do
         subject { scraper.fetch_books(user_id, :tsundoku_uri) }
         it { is_expected.to be_empty }
       end
-
-      context 'taking invalid user ID' do
-        include_context 'invalid user ID'
-
-        it 'raises ArgumentError' do
-          expect { scraper.fetch_books(user_id, :tsundoku_uri) }.to raise_error ArgumentError
-        end
-      end
     end
 
     describe '#fetch_books for wish_list' do
@@ -372,13 +348,15 @@ RSpec.describe BookmeterScraper::Scraper do
         subject { scraper.fetch_books(user_id, :wish_list_uri) }
         it { is_expected.to be_empty }
       end
+    end
 
-      context 'taking invalid user ID' do
-        include_context 'invalid user ID'
+    describe '#fetch_books for invalid arguments' do
+      it 'raises ArgumentError when taking invalid user ID' do
+        expect { scraper.fetch_books('a00000', :read_books_uri) }.to raise_error ArgumentError
+      end
 
-        it 'raises ArgumentError' do
-          expect { scraper.fetch_books(user_id, :wish_list_uri) }.to raise_error ArgumentError
-        end
+      it 'raises ArgumentError when taking invalid URI method name' do
+        expect { scraper.fetch_books('000000', :invalid_uri) }.to raise_error ArgumentError
       end
     end
   end
