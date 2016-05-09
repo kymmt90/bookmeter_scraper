@@ -3,6 +3,7 @@ CodeClimate::TestReporter.start
 
 Dir[File.join(File.dirname(__FILE__), "../lib/**/*.rb")].each { |f| require f }
 require 'webmock/rspec'
+WebMock.disable_net_connect!(:allow => "codeclimate.com")
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
