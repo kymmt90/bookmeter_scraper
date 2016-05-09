@@ -1,4 +1,8 @@
-# Bookmeter Scraper [![Build Status](https://travis-ci.org/kymmt90/bookmeter_scraper.svg?branch=master)](https://travis-ci.org/kymmt90/bookmeter_scraper) [![Gem Version](https://badge.fury.io/rb/bookmeter_scraper.svg)](https://badge.fury.io/rb/bookmeter_scraper)
+# Bookmeter Scraper
+
+[![Gem Version](https://badge.fury.io/rb/bookmeter_scraper.svg)](https://badge.fury.io/rb/bookmeter_scraper)
+[![Build Status](https://travis-ci.org/kymmt90/bookmeter_scraper.svg?branch=master)](https://travis-ci.org/kymmt90/bookmeter_scraper)
+[![Code Climate](https://codeclimate.com/github/kymmt90/bookmeter_scraper/badges/gpa.svg)](https://codeclimate.com/github/kymmt90/bookmeter_scraper)
 
 A library for scraping [Bookmeter](http://bookmeter.com).
 
