@@ -8,3 +8,6 @@ before_install:
   - gem update bundler
 env:
   - TZ=Asia/Tokyo
+addons:
+  code_climate:
+    repo_token: caae755f12d3707ffcce4f5a812daefb4e8aa197730258a82bd7375c31d6cd00
