@@ -1,3 +1,6 @@
+require "codeclimate-test-reporter"
+CodeClimate::TestReporter.start
+
 Dir[File.join(File.dirname(__FILE__), "../lib/**/*.rb")].each { |f| require f }
 require 'webmock/rspec'
 
