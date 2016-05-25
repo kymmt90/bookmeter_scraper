@@ -9,8 +9,8 @@ RSpec.describe BookmeterScraper::Bookmeter do
     let(:user_id) { '00a000' }
   end
 
-  describe BookmeterScraper::Scraper::Book do
-    subject { BookmeterScraper::Scraper::Book.new }
+  describe BookmeterScraper::Book do
+    subject { BookmeterScraper::Book.new }
     it { is_expected.to respond_to :name }
     it { is_expected.to respond_to :author }
     it { is_expected.to respond_to :read_dates }
@@ -18,8 +18,8 @@ RSpec.describe BookmeterScraper::Bookmeter do
     it { is_expected.to respond_to :image_uri }
   end
 
-  describe BookmeterScraper::Scraper::User do
-    subject { BookmeterScraper::Scraper::User.new }
+  describe BookmeterScraper::User do
+    subject { BookmeterScraper::User.new }
     it { is_expected.to respond_to :name }
     it { is_expected.to respond_to :id }
     it { is_expected.to respond_to :uri }

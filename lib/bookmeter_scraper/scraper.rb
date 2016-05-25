@@ -1,70 +1,12 @@
-require 'forwardable'
 require 'mechanize'
 require 'yasuri'
 
+require 'bookmeter_scraper/book'
+require 'bookmeter_scraper/profile'
+require 'bookmeter_scraper/user'
+
 module BookmeterScraper
   class Scraper
-    PROFILE_ATTRIBUTES = %i(
-      name
-      gender
-      age
-      blood_type
-      job
-      address
-      url
-      description
-      first_day
-      elapsed_days
-      read_books_count
-      read_pages_count
-      reviews_count
-      bookshelfs_count
-    )
-    Profile = Struct.new(*PROFILE_ATTRIBUTES)
-
-    JP_ATTRIBUTE_NAMES = {
-      gender: '性別',
-      age: '年齢',
-      blood_type: '血液型',
-      job: '職業',
-      address: '現住所',
-      url: 'URL / ブログ',
-      description: '自己紹介',
-      first_day: '記録初日',
-      elapsed_days: '経過日数',
-      read_books_count: '読んだ本',
-      read_pages_count: '読んだページ',
-      reviews_count: '感想/レビュー',
-      bookshelfs_count: '本棚',
-    }
-
-    BOOK_ATTRIBUTES = %i(name author read_dates uri image_uri)
-    Book = Struct.new(*BOOK_ATTRIBUTES)
-    class Books
-      extend Forwardable
-
-      def_delegator :@books, :[]
-      def_delegator :@books, :[]=
-      def_delegator :@books, :<<
-      def_delegator :@books, :each
-      def_delegator :@books, :flatten!
-      def_delegator :@books, :empty?
-
-      def initialize; @books = []; end
-
-      def concat(books)
-        books.each do |book|
-          next if @books.any? { |b| b.name == book.name && b.author == book.author }
-          @books << book
-        end
-      end
-
-      def to_a; @books; end
-    end
-
-    USER_ATTRIBUTES = %i(name id uri)
-    User = Struct.new(*USER_ATTRIBUTES)
-
     NUM_BOOKS_PER_PAGE = 40
     NUM_USERS_PER_PAGE = 20
 

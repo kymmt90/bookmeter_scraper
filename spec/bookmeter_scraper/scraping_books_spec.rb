@@ -68,17 +68,17 @@ RSpec.describe BookmeterScraper::Scraper do
           subject { scraper.fetch_books(user_id, :read_books_uri).to_a }
           it { is_expected.not_to be_empty }
           it { is_expected.to include \
-            BookmeterScraper::Scraper::Book.new('Web API: The Good Parts',
+            BookmeterScraper::Book.new('Web API: The Good Parts',
                                                 '水野貴明',
                                                 [Time.local(2016, 2, 6)],
                                                 'http://bookmeter.com/b/4873116864',
                                                 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'),
-            BookmeterScraper::Scraper::Book.new('メタプログラミングRuby 第2版',
+            BookmeterScraper::Book.new('メタプログラミングRuby 第2版',
                                                 'PaoloPerrotta',
                                                 [Time.local(2016, 2, 2)],
                                                 'http://bookmeter.com/b/4873117437',
                                                 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'),
-            BookmeterScraper::Scraper::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]',
+            BookmeterScraper::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]',
                                                 'RobinWilliams',
                                                 [Time.local(2015, 4, 28), Time.local(2016, 1, 10)],
                                                 'http://bookmeter.com/b/4839928401',
@@ -146,17 +146,17 @@ RSpec.describe BookmeterScraper::Scraper do
         subject { scraper.fetch_books(user_id, :reading_books_uri).to_a }
         it { is_expected.not_to be_empty }
         it { is_expected.to include \
-            BookmeterScraper::Scraper::Book.new('Web API: The Good Parts',
+            BookmeterScraper::Book.new('Web API: The Good Parts',
                                                 '水野貴明',
                                                 [Time.local(2016, 2, 6)],
                                                 'http://bookmeter.com/b/4873116864',
                                                 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'),
-            BookmeterScraper::Scraper::Book.new('メタプログラミングRuby 第2版',
+            BookmeterScraper::Book.new('メタプログラミングRuby 第2版',
                                                 'PaoloPerrotta',
                                                 [Time.local(2016, 2, 2)],
                                                 'http://bookmeter.com/b/4873117437',
                                                 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'),
-            BookmeterScraper::Scraper::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]',
+            BookmeterScraper::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]',
                                                 'RobinWilliams',
                                                 [Time.local(2015, 4, 28), Time.local(2016, 1, 10)],
                                                 'http://bookmeter.com/b/4839928401',
@@ -223,17 +223,17 @@ RSpec.describe BookmeterScraper::Scraper do
         subject { scraper.fetch_books(user_id, :tsundoku_uri).to_a }
         it { is_expected.not_to be_empty }
         it { is_expected.to include \
-            BookmeterScraper::Scraper::Book.new('Web API: The Good Parts',
+            BookmeterScraper::Book.new('Web API: The Good Parts',
                                                 '水野貴明',
                                                 [Time.local(2016, 2, 6)],
                                                 'http://bookmeter.com/b/4873116864',
                                                 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'),
-            BookmeterScraper::Scraper::Book.new('メタプログラミングRuby 第2版',
+            BookmeterScraper::Book.new('メタプログラミングRuby 第2版',
                                                 'PaoloPerrotta',
                                                 [Time.local(2016, 2, 2)],
                                                 'http://bookmeter.com/b/4873117437',
                                                 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'),
-            BookmeterScraper::Scraper::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]',
+            BookmeterScraper::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]',
                                                 'RobinWilliams',
                                                 [Time.local(2015, 4, 28), Time.local(2016, 1, 10)],
                                                 'http://bookmeter.com/b/4839928401',
@@ -300,17 +300,17 @@ RSpec.describe BookmeterScraper::Scraper do
         subject { scraper.fetch_books(user_id, :wish_list_uri).to_a }
         it { is_expected.not_to be_empty }
         it { is_expected.to include \
-            BookmeterScraper::Scraper::Book.new('Web API: The Good Parts',
+            BookmeterScraper::Book.new('Web API: The Good Parts',
                                                 '水野貴明',
                                                 [Time.local(2016, 2, 6)],
                                                 'http://bookmeter.com/b/4873116864',
                                                 'http://ecx.images-amazon.com/images/I/51GHwTNJgSL._SX230_.jpg'),
-            BookmeterScraper::Scraper::Book.new('メタプログラミングRuby 第2版',
+            BookmeterScraper::Book.new('メタプログラミングRuby 第2版',
                                                 'PaoloPerrotta',
                                                 [Time.local(2016, 2, 2)],
                                                 'http://bookmeter.com/b/4873117437',
                                                 'http://ecx.images-amazon.com/images/I/5102wwx0VzL._SX230_.jpg'),
-            BookmeterScraper::Scraper::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]',
+            BookmeterScraper::Book.new('ノンデザイナーズ・デザインブック [フルカラー新装増補版]',
                                                 'RobinWilliams',
                                                 [Time.local(2015, 4, 28), Time.local(2016, 1, 10)],
                                                 'http://bookmeter.com/b/4839928401',

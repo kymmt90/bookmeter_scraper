@@ -55,11 +55,11 @@ RSpec.describe BookmeterScraper::Scraper do
           subject { scraper.fetch_followings(user_id) }
           it { is_expected.not_to be_empty }
           it { is_expected.to include \
-            BookmeterScraper::Scraper::User.new('test_user_2', '000001', 'http://bookmeter.com/u/000001'),
-            BookmeterScraper::Scraper::User.new('test_user_3', '000002', 'http://bookmeter.com/u/000002'),
-            BookmeterScraper::Scraper::User.new('test_user_4', '000003', 'http://bookmeter.com/u/000003'),
-            BookmeterScraper::Scraper::User.new('test_user_5', '000004', 'http://bookmeter.com/u/000004'),
-            BookmeterScraper::Scraper::User.new('test_user_6', '000005', 'http://bookmeter.com/u/000005')
+            BookmeterScraper::User.new('test_user_2', '000001', 'http://bookmeter.com/u/000001'),
+            BookmeterScraper::User.new('test_user_3', '000002', 'http://bookmeter.com/u/000002'),
+            BookmeterScraper::User.new('test_user_4', '000003', 'http://bookmeter.com/u/000003'),
+            BookmeterScraper::User.new('test_user_5', '000004', 'http://bookmeter.com/u/000004'),
+            BookmeterScraper::User.new('test_user_6', '000005', 'http://bookmeter.com/u/000005')
           }
         end
       end
@@ -111,11 +111,11 @@ RSpec.describe BookmeterScraper::Scraper do
           subject { scraper.fetch_followers(user_id) }
           it { is_expected.not_to be_empty }
           it { is_expected.to include \
-            BookmeterScraper::Scraper::User.new('test_user_2', '000001', 'http://bookmeter.com/u/000001'),
-            BookmeterScraper::Scraper::User.new('test_user_3', '000002', 'http://bookmeter.com/u/000002'),
-            BookmeterScraper::Scraper::User.new('test_user_4', '000003', 'http://bookmeter.com/u/000003'),
-            BookmeterScraper::Scraper::User.new('test_user_5', '000004', 'http://bookmeter.com/u/000004'),
-            BookmeterScraper::Scraper::User.new('test_user_6', '000005', 'http://bookmeter.com/u/000005')
+            BookmeterScraper::User.new('test_user_2', '000001', 'http://bookmeter.com/u/000001'),
+            BookmeterScraper::User.new('test_user_3', '000002', 'http://bookmeter.com/u/000002'),
+            BookmeterScraper::User.new('test_user_4', '000003', 'http://bookmeter.com/u/000003'),
+            BookmeterScraper::User.new('test_user_5', '000004', 'http://bookmeter.com/u/000004'),
+            BookmeterScraper::User.new('test_user_6', '000005', 'http://bookmeter.com/u/000005')
           }
         end
       end
