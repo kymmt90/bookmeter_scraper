@@ -6,7 +6,7 @@ module BookmeterScraper
     DEFAULT_CONFIG_PATH = './config.yml'.freeze
 
     attr_reader :log_in_user_id
-
+    attr_writer :scraper
 
     class << self
       def log_in(mail = nil, password = nil)
