@@ -2,6 +2,9 @@ module BookmeterScraper
   class Configuration
     attr_accessor :mail, :password
 
+    # Create a new configuration.
+    # @param [String] config_file configuration file path
+    # @return [BookmeterScraper::Configuration]
     def initialize(config_file = nil)
       if config_file.nil?
         @mail = @password = ''
