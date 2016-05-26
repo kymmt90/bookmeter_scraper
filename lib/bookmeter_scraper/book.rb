@@ -16,7 +16,7 @@ module BookmeterScraper
 
     def initialize; @books = []; end
 
-    def concat(books)
+    def append(books)
       books.each do |book|
         next if @books.any? { |b| b.name == book.name && b.author == book.author }
         @books << book

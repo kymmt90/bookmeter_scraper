@@ -66,7 +66,7 @@ module BookmeterScraper
       raise ArgumentError unless user_id =~ USER_ID_REGEX
 
       date = Time.local(year, month)
-      books = @scraper.fetch_read_books(user_id, date)
+      books = @scraper.fetch_read_books_in(date, user_id)
       books.each { |b| yield b } if block_given?
       books.to_a
     end

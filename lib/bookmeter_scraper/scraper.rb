@@ -45,8 +45,10 @@ module BookmeterScraper
     end
 
     def fetch_books(user_id, uri_method, agent = @agent)
-      raise ArgumentError unless user_id =~ USER_ID_REGEX
-      raise ArgumentError unless BookmeterScraper.methods.include?(uri_method)
+      unless user_id =~ USER_ID_REGEX && \
+             BookmeterScraper.methods.include?(uri_method)
+        raise ArgumentError
+      end
       raise ScraperError if agent.nil?
       return [] unless agent.logged_in?
 
@@ -60,8 +62,10 @@ module BookmeterScraper
     end
 
     def scrape_books_pages(user_id, uri_method, agent = @agent)
-      raise ArgumentError unless user_id =~ USER_ID_REGEX
-      raise ArgumentError unless BookmeterScraper.methods.include?(uri_method)
+      unless user_id =~ USER_ID_REGEX && \
+             BookmeterScraper.methods.include?(uri_method)
+        raise ArgumentError
+      end
       raise ScraperError if agent.nil?
       return [] unless agent.logged_in?
 
@@ -128,33 +132,34 @@ module BookmeterScraper
       books
     end
 
-    def fetch_read_books(user_id, target_year_month)
+    def fetch_read_books_in(target_year_month, user_id)
       raise ArgumentError unless user_id =~ USER_ID_REGEX
       raise ArgumentError if target_year_month.nil?
 
       result = Books.new
       scrape_books_pages(user_id, :read_books_uri).each do |page|
-        first_book_date = scrape_read_date(page['book_1_link'])
+        first_book_date = get_first_book_date(page)
         last_book_date  = get_last_book_date(page)
 
         first_book_year_month = Time.local(first_book_date['year'].to_i, first_book_date['month'].to_i)
         last_book_year_month  = Time.local(last_book_date['year'].to_i, last_book_date['month'].to_i)
 
-        if target_year_month < last_book_year_month
-          next
-        elsif target_year_month == first_book_year_month && target_year_month > last_book_year_month
-          result.concat(fetch_target_books(target_year_month, page))
-          break
-        elsif target_year_month < first_book_year_month && target_year_month > last_book_year_month
-          result.concat(fetch_target_books(target_year_month, page))
-          break
-        elsif target_year_month <= first_book_year_month && target_year_month >= last_book_year_month
-          result.concat(fetch_target_books(target_year_month, page))
-        elsif target_year_month > first_book_year_month
-          break
-        end
+        # to next page if target is older than this page's last book
+        next if target_year_month < last_book_year_month
+
+        # exit if target is newer than this page's first book
+        break if target_year_month > first_book_year_month
+
+        result.append(fetch_target_books_from(page, target_year_month))
+
+        # exit if target is newer than this page's last book
+        break if target_year_month > last_book_year_month
       end
       result
+    end
+
+    def get_first_book_date(page)
+      scrape_read_date(page['book_1_link'])
     end
 
     def get_last_book_date(page)
@@ -167,23 +172,21 @@ module BookmeterScraper
       end
     end
 
-    def fetch_target_books(target_year_month, page)
-      raise ArgumentError if target_year_month.nil?
-      raise ArgumentError if page.nil?
+    def fetch_target_books_from(page, target_year_month)
+      raise ArgumentError if target_year_month.nil? || page.nil?
 
       target_books = Books.new
       1.upto(NUM_BOOKS_PER_PAGE) do |i|
         next if page["book_#{i}_link"].empty?
 
-        read_year_months = []
+        # scrape first read date
         read_date  = scrape_read_date(page["book_#{i}_link"])
         read_dates = [Time.local(read_date['year'], read_date['month'], read_date['day'])]
-        read_year_months << Time.local(read_date['year'], read_date['month'])
+        read_year_months = [Time.local(read_date['year'], read_date['month'])]
 
-        reread_dates = []
-        reread_dates << scrape_reread_date(page["book_#{i}_link"])
+        # scrape re-read dates
+        reread_dates = [scrape_reread_date(page["book_#{i}_link"])]
         reread_dates.flatten!
-
         unless reread_dates.empty?
           reread_dates.each do |date|
             read_year_months << Time.local(date['reread_year'], date['reread_month'])
