@@ -47,7 +47,7 @@ module BookmeterScraper
     def page_after_logging_in?(page)
       raise ArgumentError if page.nil?
 
-      page.uri.to_s == BookmeterScraper::ROOT_URI + '/'
+      page.uri.to_s == BookmeterScraper::ROOT_URI + '/home'
     end
 
     def extract_user_id(page)
