@@ -3,7 +3,7 @@ require 'bookmeter_scraper/configuration'
 require 'bookmeter_scraper/version'
 
 module BookmeterScraper
-  ROOT_URI  = 'http://bookmeter.com'.freeze
+  ROOT_URI  = 'https://bookmeter.com'.freeze
   LOGIN_URI = "#{ROOT_URI}/login".freeze
 
   USER_ID_REGEX = /^\d+$/

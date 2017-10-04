@@ -24,8 +24,8 @@ module BookmeterScraper
       page_after_submitting_form = nil
       @agent.get(BookmeterScraper::LOGIN_URI) do |page|
         page_after_submitting_form = page.form_with(action: '/login') do |form|
-          form.field_with(name: 'mail').value     = config.mail
-          form.field_with(name: 'password').value = config.password
+          form.field_with(name: 'session[email_address]').value     = config.mail
+          form.field_with(name: 'session[password]').value = config.password
         end.submit
       end
 
@@ -47,7 +47,7 @@ module BookmeterScraper
     def page_after_logging_in?(page)
       raise ArgumentError if page.nil?
 
-      page.uri.to_s == BookmeterScraper::ROOT_URI + '/'
+      page.uri.to_s == BookmeterScraper::ROOT_URI + '/home'
     end
 
     def extract_user_id(page)
